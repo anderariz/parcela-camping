@@ -3,95 +3,129 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#1677ff">
+<meta name="theme-color" content="#173f2a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Parcela Camping">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Simulador de parcela de camping</title>
+<title>Parcela Camping</title>
 <style>
-:root{--bg:#f4f6f8;--panel:#fff;--line:#d9dee7;--text:#182033;--muted:#6b7483;--accent:#246f43;--danger:#d92d20}
+:root{
+  --bg:#edf2ee;--panel:#fff;--line:#d5ddd6;--text:#1f2a24;--muted:#6e7971;
+  --green:#173f2a;--blue:#2575e8;--danger:#d92d20;--shadow:0 12px 30px rgba(25,40,30,.11)
+}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-.top{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line);padding:10px max(12px,env(safe-area-inset-left));padding-top:max(10px,env(safe-area-inset-top));display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.top h1{font-size:17px;margin:0 auto 0 0}
-button,input,select{font:inherit;font-size:16px}
-button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 11px}
-button.primary{background:#173f2a;border-color:var(--accent);color:#fff}
-.shell{display:grid;grid-template-columns:220px minmax(0,1fr) 280px;min-height:calc(100vh - 62px)}
-.panel{background:#fff;padding:12px;border-right:1px solid var(--line);overflow:auto}
+html,body{margin:0;min-height:100%;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)}
+button,input,select{font:inherit}
+button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;color:var(--text)}
+button:active{transform:scale(.99)}
+.top{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);backdrop-filter:blur(15px);padding:max(10px,env(safe-area-inset-top)) 12px 10px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center}
+.brand{font-weight:800;font-size:18px;margin-right:auto}
+.layout{display:grid;grid-template-columns:245px minmax(0,1fr) 280px;min-height:calc(100vh - 60px)}
+.panel{background:#fff;border-right:1px solid var(--line);padding:14px;overflow:auto}
 .panel.right{border-left:1px solid var(--line);border-right:0}
-h2{font-size:12px;text-transform:uppercase;letter-spacing:.05em;margin:4px 0 10px}
-.tools{display:grid;gap:7px}.tool{display:flex;align-items:center;gap:9px;text-align:left}.icon{width:34px;font-size:23px;text-align:center}.sub{font-size:12px;color:var(--muted)}
-main{padding:10px;overflow:auto}.stagewrap{min-width:560px}
-#stage{display:block;width:100%;background:#ddd;border:1px solid var(--line);border-radius:12px;touch-action:none}
-.controls{display:grid;grid-template-columns:repeat(3,minmax(160px,1fr));gap:8px;margin-top:8px}.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px}
-label{font-size:12px;color:var(--muted);display:grid;gap:4px}input,select{width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:#fff}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.hidden{display:none!important}.small{font-size:12px;color:var(--muted)}
-.badge{padding:8px;border:1px solid var(--line);border-radius:9px;background:#fafafa}
-@media(max-width:950px){.shell{grid-template-columns:170px 1fr}.panel.right{grid-column:1/-1;border-left:0;border-top:1px solid var(--line)}}
-@media(max-width:700px){.shell{display:block}.panel{border-right:0;border-bottom:1px solid var(--line)}.tools{grid-template-columns:repeat(2,1fr)}.controls{grid-template-columns:1fr}.stagewrap{min-width:520px}.top{gap:6px}}
+h2{font-size:12px;letter-spacing:.07em;text-transform:uppercase;margin:4px 0 10px}
+.section{margin-bottom:16px}
+label{display:grid;gap:5px;font-size:12px;color:var(--muted);margin-bottom:8px}
+input,select{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff;color:var(--text)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.apply{width:100%;background:var(--green);color:#fff;border-color:var(--green);font-weight:700}
+.tools{display:grid;gap:7px}
+.tool{display:flex;gap:9px;align-items:center;text-align:left;min-height:50px}
+.tool .ico{font-size:22px;width:32px;text-align:center}
+.tool small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+main{padding:12px;overflow:auto}
+.stagewrap{min-width:640px;position:relative}
+#stage{display:block;width:100%;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);touch-action:none;background:#ddd}
+.hud{position:sticky;bottom:10px;display:flex;justify-content:center;gap:8px;margin-top:-58px;z-index:20;pointer-events:none}
+.hud>div{pointer-events:auto;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:15px;padding:7px;box-shadow:var(--shadow)}
+.hud button{border:0;padding:8px 10px}
+.solar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
+.small{font-size:12px;color:var(--muted)}
+.badge{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#f8faf8;font-weight:700}
+.hidden{display:none!important}
+.prop-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.danger{color:var(--danger);border-color:#f0bbb5}
+@media(max-width:1020px){.layout{grid-template-columns:200px 1fr}.panel.right{grid-column:1/-1;border-left:0;border-top:1px solid var(--line)}}
+@media(max-width:760px){
+ .layout{display:block}.panel{border-right:0;border-bottom:1px solid var(--line)}
+ .tools{grid-template-columns:repeat(2,1fr)}main{padding:8px}.stagewrap{min-width:600px}
+ .solar{grid-template-columns:1fr}.top .secondary{display:none}
+}
 </style>
 </head>
 <body>
 <div class="top">
-  <h1>⛺ Parcela Camping</h1>
+  <div class="brand">⛺ Parcela Camping</div>
   <button id="save">Guardar</button>
   <button id="load">Cargar</button>
-  <button id="reset">Nuevo</button>
+  <button id="reset" class="secondary">Nuevo</button>
 </div>
 
-<div class="shell">
+<div class="layout">
 <aside class="panel">
-  <h2>Parcela</h2>
-  <div class="row">
-    <label>Ancho (m)<input id="plotW" type="number" value="10" min="3" step=".5"></label>
-    <label>Largo (m)<input id="plotH" type="number" value="8" min="3" step=".5"></label>
+  <div class="section">
+    <h2>Parcela</h2>
+    <div class="row">
+      <label>Ancho (m)<input id="plotW" type="number" value="10" min="3" step=".5"></label>
+      <label>Largo (m)<input id="plotH" type="number" value="8" min="3" step=".5"></label>
+    </div>
+    <label>Suelo
+      <select id="ground"><option value="grass">Hierba</option><option value="gravel">Grava</option></select>
+    </label>
+    <label>Pasillo / calle
+      <select id="roadSide">
+        <option value="top">Arriba</option><option value="right">Derecha</option>
+        <option value="bottom">Abajo</option><option value="left">Izquierda</option>
+      </select>
+    </label>
+    <label>Cuadrícula
+      <select id="gridStep"><option value="1">1 m</option><option value=".5" selected>0,5 m</option><option value=".25">0,25 m</option></select>
+    </label>
+    <button id="apply" class="apply">Aplicar</button>
   </div>
-  <label style="margin-top:8px">Suelo
-    <select id="ground">
-      <option value="grass">Hierba</option>
-      <option value="gravel">Grava</option>
-    </select>
-  </label>
-  <label style="margin-top:8px">Pasillo / calle del camping
-    <select id="roadSide">
-      <option value="top">Arriba</option>
-      <option value="right">Derecha</option>
-      <option value="bottom">Abajo</option>
-      <option value="left">Izquierda</option>
-    </select>
-  </label>
-  <label style="margin-top:8px">Cuadrícula
-    <select id="gridStep">
-      <option value="1">1 m</option><option value=".5" selected>0,5 m</option><option value=".25">0,25 m</option>
-    </select>
-  </label>
-  <button class="primary" id="apply" style="width:100%;margin-top:8px">Aplicar</button>
 
-  <h2 style="margin-top:18px">Elementos</h2>
-  <div class="tools">
-    <button class="tool" data-add="van"><span class="icon">🚐</span><span><b>VW T4</b><div class="sub">Con tienda lateral</div></span></button>
-    <button class="tool" data-add="tent"><span class="icon">⛺</span><span><b>Base Arpenaz</b></span></button>
-    <button class="tool" data-add="floor"><span class="icon">▦</span><span><b>Tela de suelo</b><div class="sub">Alfombra camping</div></span></button>
-    <button class="tool" data-add="table"><span class="icon">🪵</span><span><b>Mesa</b></span></button>
-    <button class="tool" data-add="chair"><span class="icon">🪑</span><span><b>Silla</b></span></button>
-    <button class="tool" data-add="kitchen"><span class="icon">🍳</span><span><b>Cocina</b></span></button>
-    <button class="tool" data-add="fridge"><span class="icon">🧊</span><span><b>Nevera</b></span></button>
-    <button class="tool" data-add="bike"><span class="icon">🚲</span><span><b>Bicicleta</b></span></button>
-    <button class="tool" data-add="tree"><span class="icon">🌳</span><span><b>Árbol</b></span></button>
-    <button class="tool" data-add="hedge"><span class="icon">🌿</span><span><b>Seto</b><div class="sub">Longitud editable</div></span></button>
-    <button class="tool" data-add="utility"><span class="icon">⚡💧</span><span><b>Luz + agua</b></span></button>
+  <div class="section">
+    <h2>Elementos</h2>
+    <div class="tools">
+      <button class="tool" data-add="van"><span class="ico">🚐</span><span><b>VW T4</b><small>Con tienda de techo lateral</small></span></button>
+      <button class="tool" data-add="tent"><span class="ico">⛺</span><span><b>Base Arpenaz</b></span></button>
+      <button class="tool" data-add="floor"><span class="ico">▦</span><span><b>Tela de suelo</b></span></button>
+      <button class="tool" data-add="table"><span class="ico">🪵</span><span><b>Mesa</b></span></button>
+      <button class="tool" data-add="chair"><span class="ico">🪑</span><span><b>Silla</b></span></button>
+      <button class="tool" data-add="kitchen"><span class="ico">🍳</span><span><b>Cocina</b></span></button>
+      <button class="tool" data-add="fridge"><span class="ico">🧊</span><span><b>Nevera</b></span></button>
+      <button class="tool" data-add="bike"><span class="ico">🚲</span><span><b>Bicicleta</b></span></button>
+      <button class="tool" data-add="tree"><span class="ico">🌳</span><span><b>Árbol</b></span></button>
+      <button class="tool" data-add="hedge"><span class="ico">🌿</span><span><b>Seto</b></span></button>
+      <button class="tool" data-add="utility"><span class="ico">⚡💧</span><span><b>Luz + agua</b></span></button>
+    </div>
   </div>
 </aside>
 
 <main>
   <div class="stagewrap"><svg id="stage" viewBox="0 0 1000 800"></svg></div>
-  <div class="controls">
-    <div class="card"><b>Norte</b><label>Orientación<input id="north" type="range" min="0" max="359" value="0"></label><div class="small"><span id="northVal">0°</span></div></div>
-    <div class="card"><b>Sol</b><label>Hora<input id="sunTime" type="range" min="7" max="21" step=".25" value="13"></label><div class="small"><span id="sunLabel">13:00</span> · <label style="display:inline"><input id="shadows" type="checkbox" checked style="width:auto"> sombras</label></div></div>
-    <div class="card"><b>Fecha</b><label><input id="date" type="date"></label><div class="small">Preparado para cálculo solar más preciso en una siguiente versión.</div></div>
+
+  <div class="hud"><div>
+    <button id="rotate90">↻ Girar</button>
+    <button id="dup">⧉ Duplicar</button>
+    <button id="lock">🔒 Bloquear</button>
+    <button id="del" style="color:#d92d20">🗑 Eliminar</button>
+  </div></div>
+
+  <div class="solar">
+    <div class="card">
+      <b>Norte</b>
+      <label>Orientación <input id="north" type="range" min="0" max="359" value="0"></label>
+      <div class="small"><span id="northVal">0°</span> · el recorrido solar gira automáticamente con el norte</div>
+    </div>
+    <div class="card">
+      <b>Sol</b>
+      <label>Hora <input id="sunTime" type="range" min="7" max="21" step=".25" value="13"></label>
+      <div class="small"><span id="sunLabel">13:00</span> · <label style="display:inline"><input id="shadows" type="checkbox" checked style="width:auto"> sombras</label></div>
+    </div>
   </div>
 </main>
 
@@ -100,14 +134,13 @@ label{font-size:12px;color:var(--muted);display:grid;gap:4px}input,select{width:
   <div id="none" class="small">Selecciona un elemento.</div>
   <div id="props" class="hidden">
     <div id="pname" class="badge">Elemento</div>
-    <div class="row" style="margin-top:8px"><label>X (m)<input id="px" type="number" step=".1"></label><label>Y (m)<input id="py" type="number" step=".1"></label></div>
-    <div class="row" style="margin-top:8px"><label>Ancho (m)<input id="pw" type="number" step=".05"></label><label>Largo (m)<input id="ph" type="number" step=".05"></label></div>
-    <label style="margin-top:8px">Giro<input id="rot" type="range" min="0" max="359"><span id="rotVal">0°</span></label>
+    <div class="row" style="margin-top:10px"><label>X (m)<input id="px" type="number" step=".1"></label><label>Y (m)<input id="py" type="number" step=".1"></label></div>
+    <div class="row"><label>Ancho (m)<input id="pw" type="number" step=".05"></label><label>Largo (m)<input id="ph" type="number" step=".05"></label></div>
+    <label>Giro <input id="rot" type="range" min="0" max="359"><span id="rotVal">0°</span></label>
     <div id="utilityProps" class="hidden">
-      <div class="row" style="margin-top:8px"><label>Cable (m)<input id="cable" type="number" step="1"></label><label>Manguera (m)<input id="hose" type="number" step="1"></label></div>
+      <div class="row"><label>Cable (m)<input id="cable" type="number" step="1"></label><label>Manguera (m)<input id="hose" type="number" step="1"></label></div>
     </div>
-    <button id="dup" style="width:100%;margin-top:10px">Duplicar</button>
-    <button id="del" style="width:100%;margin-top:8px;color:var(--danger)">Eliminar</button>
+    <div class="prop-actions"><button id="dup2">Duplicar</button><button id="del2" class="danger">Eliminar</button></div>
   </div>
 </aside>
 </div>
@@ -116,9 +149,9 @@ label{font-size:12px;color:var(--muted);display:grid;gap:4px}input,select{width:
 const svg=document.getElementById('stage'),NS='http://www.w3.org/2000/svg';
 let plotW=10,plotH=8,ground='grass',roadSide='top',objs=[],sel=null,drag=null,idc=1;
 const D={
- van:{n:'VW T4 + tienda de techo',w:3.6,h:4.8},
+ van:{n:'VW T4 + tienda de techo',w:3.55,h:4.8},
  tent:{n:'Base Arpenaz',w:2.5,h:2.5},
- floor:{n:'Tela / alfombra de suelo',w:4.5,h:4},
+ floor:{n:'Tela / alfombra de suelo',w:4.5,h:4.0},
  table:{n:'Mesa',w:1.2,h:.75},
  chair:{n:'Silla',w:.55,h:.55},
  kitchen:{n:'Cocina',w:1.2,h:.6},
@@ -131,98 +164,206 @@ const D={
 function E(t,a={}){let n=document.createElementNS(NS,t);for(const[k,v]of Object.entries(a))n.setAttribute(k,v);return n}
 function S(){let vw=1000,vh=Math.round(vw*plotH/plotW);svg.setAttribute('viewBox',`0 0 ${vw} ${vh}`);return{s:vw/plotW,vw,vh}}
 function SP(e){let p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse())}
-function add(type){let d=D[type],o={id:idc++,type,x:Math.max(.2,(plotW-d.w)/2),y:Math.max(.2,(plotH-d.h)/2),w:d.w,h:d.h,rot:0,cable:d.cable||0,hose:d.hose||0};objs.push(o);sel=o.id;render()}
 function current(){return objs.find(o=>o.id===sel)}
-function groundFill(){
-  return ground==='grass' ? '#92a85e' : '#c7c2b7';
+function add(type){let d=D[type],o={id:idc++,type,x:Math.max(.2,(plotW-d.w)/2),y:Math.max(.2,(plotH-d.h)/2),w:d.w,h:d.h,rot:0,locked:false,cable:d.cable||0,hose:d.hose||0};objs.push(o);sel=o.id;render()}
+function gh(){return ground==='grass'?'#879d58':'#c6c0b3'}
+function texture(vw,vh){
+ let count=ground==='grass'?300:420;
+ for(let i=0;i<count;i++){
+   let x=(i*83)%vw,y=(i*157)%vh,r=ground==='grass'?1+(i%3):1+(i%4);
+   svg.appendChild(E('circle',{cx:x,cy:y,r,fill:ground==='grass'?(i%2?'#6f8946':'#b5c486'):(i%2?'#a29d94':'#e0ddd5'),opacity:ground==='grass'?.34:.62}))
+ }
 }
-function drawTexture(vw,vh){
-  if(ground==='grass'){
-    for(let i=0;i<180;i++){let x=(i*73)%vw,y=(i*149)%vh;svg.appendChild(E('circle',{cx:x,cy:y,r:1.5+(i%3),fill:i%2?'#78934e':'#a9b978',opacity:.38}))}
-  }else{
-    for(let i=0;i<240;i++){let x=(i*61)%vw,y=(i*137)%vh,r=1+(i%4);svg.appendChild(E('circle',{cx:x,cy:y,r,fill:i%2?'#aaa69d':'#dfdcd5',opacity:.7}))}
-  }
+function drawRoad(s,vw,vh){
+ const roadPx=Math.max(56,s*.70),fill='#c8b690'; let r,tx,ty,rot=0;
+ if(roadSide==='top'){r={x:0,y:0,width:vw,height:roadPx};tx=vw/2;ty=roadPx/2+5}
+ if(roadSide==='bottom'){r={x:0,y:vh-roadPx,width:vw,height:roadPx};tx=vw/2;ty=vh-roadPx/2+5}
+ if(roadSide==='left'){r={x:0,y:0,width:roadPx,height:vh};tx=roadPx/2;ty=vh/2;rot=-90}
+ if(roadSide==='right'){r={x:vw-roadPx,y:0,width:roadPx,height:vh};tx=vw-roadPx/2;ty=vh/2;rot=90}
+ svg.appendChild(E('rect',{...r,fill}));
+ for(let i=0;i<24;i++){let cx=(i*91)%vw,cy=(i*53)%vh;if(cx>r.x&&cx<r.x+r.width&&cy>r.y&&cy<r.y+r.height)svg.appendChild(E('circle',{cx,cy,r:2+(i%3),fill:'#a18d6f',opacity:.55}))}
+ let t=E('text',{x:tx,y:ty,'text-anchor':'middle','font-size':17,'font-weight':'700',fill:'#4e4436',transform:`rotate(${rot} ${tx} ${ty})`});t.textContent='PASILLO / CALLE DEL CAMPING';svg.appendChild(t)
 }
-function drawRoad(vw,vh,s){
-  const rp=Math.max(55,s*.65), fill='#c9b895'; let r,tx,ty,rr=0;
-  if(roadSide==='top'){r={x:0,y:0,width:vw,height:rp};tx=vw/2;ty=rp/2+5}
-  if(roadSide==='bottom'){r={x:0,y:vh-rp,width:vw,height:rp};tx=vw/2;ty=vh-rp/2+5}
-  if(roadSide==='left'){r={x:0,y:0,width:rp,height:vh};tx=rp/2;ty=vh/2;rr=-90}
-  if(roadSide==='right'){r={x:vw-rp,y:0,width:rp,height:vh};tx=vw-rp/2;ty=vh/2;rr=90}
-  svg.appendChild(E('rect',{...r,fill,opacity:.96}));
-  let t=E('text',{x:tx,y:ty,'text-anchor':'middle','font-size':17,'font-weight':'700',fill:'#4c4336',transform:`rotate(${rr} ${tx} ${ty})`});t.textContent='PASILLO / CALLE DEL CAMPING';svg.appendChild(t);
+function sunGeometry(vw,vh){
+ const northDeg=+document.getElementById('north').value;
+ const hour=+document.getElementById('sunTime').value;
+ // Local "east-west" axis is exactly perpendicular to north-south axis.
+ // At 7:00 sun is toward east, at 14:00 near south/center, at 21:00 toward west.
+ const northRad=northDeg*Math.PI/180;
+ const eastX=Math.cos(northRad), eastY=Math.sin(northRad); // east vector perpendicular to north
+ const southX=Math.sin(northRad), southY=-Math.cos(northRad); // opposite of north
+ const t=(hour-7)/14; // 0..1
+ const centerX=vw/2, centerY=vh/2;
+ const half=Math.min(vw,vh)*0.42;
+ const eastWest=(0.5-t)*2*half;
+ const middayBias=Math.sin(Math.PI*t)*Math.min(vw,vh)*0.18;
+ return {
+   x:centerX + eastX*eastWest + southX*middayBias,
+   y:centerY + eastY*eastWest + southY*middayBias,
+   eastX,eastY,southX,southY,t
+ };
 }
+function drawCompassAndSun(vw,vh){
+ const northDeg=+document.getElementById('north').value;
+ const a=northDeg*Math.PI/180,cx=58,cy=58,L=30;
+ svg.appendChild(E('circle',{cx,cy,r:35,fill:'rgba(255,255,255,.78)',stroke:'#8d978f','stroke-width':1.5}));
+ svg.appendChild(E('line',{x1:cx,y1:cy,x2:cx+Math.sin(a)*L,y2:cy-Math.cos(a)*L,stroke:'#d22','stroke-width':4}));
+ let nt=E('text',{x:cx+Math.sin(a)*(L+14),y:cy-Math.cos(a)*(L+14)+5,'text-anchor':'middle','font-size':15,'font-weight':'800',fill:'#d22'});nt.textContent='N';svg.appendChild(nt);
+ // solar trajectory line, always perpendicular to north
+ const g=sunGeometry(vw,vh),half=Math.min(vw,vh)*.42,mid=Math.min(vw,vh)*.18;
+ let pts=[];
+ for(let i=0;i<=40;i++){
+   let tt=i/40, ew=(.5-tt)*2*half, sb=Math.sin(Math.PI*tt)*mid;
+   pts.push(`${vw/2+g.eastX*ew+g.southX*sb},${vh/2+g.eastY*ew+g.southY*sb}`);
+ }
+ svg.appendChild(E('polyline',{points:pts.join(' '),fill:'none',stroke:'#f2a900','stroke-width':3,'stroke-dasharray':'10 8',opacity:.85}));
+ svg.appendChild(E('circle',{cx:g.x,cy:g.y,r:17,fill:'#ffb400',stroke:'#ef8d00','stroke-width':3}));
+}
+function label(g,text,x,y,fs=13,fill='#fff'){let t=E('text',{x,y,'text-anchor':'middle','font-size':fs,'font-weight':'700',fill});t.textContent=text;g.appendChild(t)}
 function drawObj(o,s){
-  let g=E('g',{class:'obj','data-id':o.id,transform:`translate(${o.x*s} ${o.y*s}) rotate(${o.rot} ${o.w*s/2} ${o.h*s/2})`}),w=o.w*s,h=o.h*s;
-  if(o.type==='utility'){
-    if(o.cable)g.appendChild(E('circle',{cx:w/2,cy:h/2,r:o.cable*s,fill:'none',stroke:'#f0b500','stroke-width':2,'stroke-dasharray':'10 8',opacity:.75}));
-    if(o.hose)g.appendChild(E('circle',{cx:w/2,cy:h/2,r:o.hose*s,fill:'none',stroke:'#1688e8','stroke-width':2,'stroke-dasharray':'10 8',opacity:.75}));
-  }
-  if(o.type==='floor'){
-    g.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:7,fill:'#aaa58f',opacity:.78,stroke:'#7e7a68','stroke-width':2,'stroke-dasharray':'6 4'}));
-    for(let yy=10;yy<h;yy+=14)g.appendChild(E('line',{x1:0,y1:yy,x2:w,y2:yy,stroke:'#d8d2be','stroke-width':1,opacity:.55}));
-  } else if(o.type==='tree')g.appendChild(E('circle',{cx:w/2,cy:h/2,r:Math.min(w,h)/2,fill:'#426f30',stroke:'#29471f','stroke-width':2}));
-  else if(o.type==='hedge'){
-    g.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:h*.35,fill:'#315f2f',stroke:'#214920','stroke-width':2}));
-    for(let xx=8;xx<w;xx+=16)g.appendChild(E('circle',{cx:xx,cy:h/2,r:Math.min(h*.42,10),fill:'#4b7b40'}));
-  } else if(o.type==='bike'){
-    let cy=h*.55,r=Math.min(h*.28,w*.12);
-    g.appendChild(E('circle',{cx:w*.22,cy,r,fill:'none',stroke:'#202827','stroke-width':3}));
-    g.appendChild(E('circle',{cx:w*.78,cy,r,fill:'none',stroke:'#202827','stroke-width':3}));
-    g.appendChild(E('line',{x1:w*.22,y1:cy,x2:w*.48,y2:h*.28,stroke:'#202827','stroke-width':3}));
-    g.appendChild(E('line',{x1:w*.48,y1:h*.28,x2:w*.62,y2:cy,stroke:'#202827','stroke-width':3}));
-    g.appendChild(E('line',{x1:w*.62,y1:cy,x2:w*.22,y2:cy,stroke:'#202827','stroke-width':3}));
-    g.appendChild(E('line',{x1:w*.48,y1:h*.28,x2:w*.78,y2:cy,stroke:'#202827','stroke-width':3}));
-  } else{
-    let fill={van:'#28383d',tent:'#ccb994',table:'#9d6c38',chair:'#6b7d41',kitchen:'#79644e',fridge:'#2a78a9',utility:'#5a6470'}[o.type]||'#777';
-    g.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:Math.min(w,h)*.1,fill,stroke:'#26313d','stroke-width':2}));
-    if(o.type==='van'){
-      g.appendChild(E('rect',{x:w*.43,y:h*.08,width:w*.55,height:h*.84,rx:8,fill:'#d8c6a1',stroke:'#5b4a31','stroke-width':2}));
-      let t=E('text',{x:w*.70,y:h*.50,'text-anchor':'middle','font-size':Math.max(10,w*.055),fill:'#2a2118'});t.textContent='TIENDA TECHO';g.appendChild(t);
-    }
-    if(o.type==='kitchen'){let t=E('text',{x:w/2,y:h*.58,'text-anchor':'middle','font-size':Math.max(10,h*.3),fill:'#fff'});t.textContent='COCINA';g.appendChild(t)}
-    if(o.type==='fridge'){let t=E('text',{x:w/2,y:h*.58,'text-anchor':'middle','font-size':Math.max(10,h*.32),fill:'#fff'});t.textContent='NEVERA';g.appendChild(t)}
-    if(o.type==='utility'){let t=E('text',{x:w/2,y:h*.67,'text-anchor':'middle','font-size':Math.max(13,h*.7)});t.textContent='⚡💧';g.appendChild(t)}
-  }
-  if(sel===o.id)g.appendChild(E('rect',{x:-5,y:-5,width:w+10,height:h+10,rx:8,fill:'none',stroke:'#1677ff','stroke-width':4,'stroke-dasharray':'10 7'}));
-  svg.appendChild(g)
+ let g=E('g',{class:'obj','data-id':o.id,transform:`translate(${o.x*s} ${o.y*s}) rotate(${o.rot} ${o.w*s/2} ${o.h*s/2})`,opacity:o.locked?.82:1}),w=o.w*s,h=o.h*s;
+ if(o.type==='utility'){
+   if(o.cable)g.appendChild(E('circle',{cx:w/2,cy:h/2,r:o.cable*s,fill:'none',stroke:'#f4b000','stroke-width':2,'stroke-dasharray':'10 8',opacity:.7}));
+   if(o.hose)g.appendChild(E('circle',{cx:w/2,cy:h/2,r:o.hose*s,fill:'none',stroke:'#1689e8','stroke-width':2,'stroke-dasharray':'10 8',opacity:.7}));
+ }
+ if(o.type==='floor'){
+   g.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:8,fill:'#9b9789',opacity:.78,stroke:'#736f62','stroke-width':2}));
+   for(let yy=8;yy<h;yy+=10)g.appendChild(E('line',{x1:0,y1:yy,x2:w,y2:yy,stroke:'#d6d1c2','stroke-width':1,opacity:.55}));
+   for(let xx=8;xx<w;xx+=10)g.appendChild(E('line',{x1:xx,y1:0,x2:xx,y2:h,stroke:'#878274','stroke-width':.6,opacity:.25}));
+ }
+ else if(o.type==='tree'){
+   for(let i=0;i<7;i++){
+     let ang=i*Math.PI*2/7, rr=Math.min(w,h)*(.26+(i%2)*.03);
+     g.appendChild(E('circle',{cx:w/2+Math.cos(ang)*w*.16,cy:h/2+Math.sin(ang)*h*.16,r:rr,fill:i%2?'#4d7a36':'#3f6a2e',opacity:.95}));
+   }
+   g.appendChild(E('circle',{cx:w/2,cy:h/2,r:Math.min(w,h)*.08,fill:'#5b412a'}));
+ }
+ else if(o.type==='hedge'){
+   g.appendChild(E('rect',{x:0,y:h*.18,width:w,height:h*.64,rx:h*.25,fill:'#2f5e2f',stroke:'#214821','stroke-width':2}));
+   for(let xx=6;xx<w;xx+=12)g.appendChild(E('circle',{cx:xx,cy:h/2+(xx%24?2:-2),r:Math.min(h*.33,9),fill:xx%24?'#477843':'#396a36'}));
+ }
+ else if(o.type==='van'){
+   // realistic top-view van body
+   g.appendChild(E('rect',{x:0,y:0,width:w*.48,height:h,rx:Math.min(w*.48,h)*.16,fill:'#1e2d30',stroke:'#11191b','stroke-width':2}));
+   g.appendChild(E('rect',{x:w*.06,y:h*.07,width:w*.36,height:h*.17,rx:5,fill:'#58686d'}));
+   g.appendChild(E('rect',{x:w*.06,y:h*.27,width:w*.36,height:h*.47,rx:5,fill:'#24383c'}));
+   g.appendChild(E('rect',{x:w*.06,y:h*.77,width:w*.36,height:h*.12,rx:5,fill:'#53656a'}));
+   g.appendChild(E('rect',{x:-w*.03,y:h*.22,width:w*.05,height:h*.18,rx:2,fill:'#111'}));
+   g.appendChild(E('rect',{x:-w*.03,y:h*.62,width:w*.05,height:h*.18,rx:2,fill:'#111'}));
+   g.appendChild(E('rect',{x:w*.46,y:h*.22,width:w*.05,height:h*.18,rx:2,fill:'#111'}));
+   g.appendChild(E('rect',{x:w*.46,y:h*.62,width:w*.05,height:h*.18,rx:2,fill:'#111'}));
+   // rooftop tent opened to side
+   g.appendChild(E('rect',{x:w*.44,y:h*.12,width:w*.54,height:h*.76,rx:8,fill:'#c7b18b',stroke:'#5b4932','stroke-width':2}));
+   g.appendChild(E('path',{d:`M ${w*.45} ${h*.5} L ${w*.71} ${h*.13} L ${w*.97} ${h*.5} L ${w*.71} ${h*.87} Z`,fill:'#d9c9aa',stroke:'#77634a','stroke-width':1.5}));
+   g.appendChild(E('path',{d:`M ${w*.71} ${h*.13} L ${w*.71} ${h*.87}`,stroke:'#8d795e','stroke-width':1.4}));
+ }
+ else if(o.type==='tent'){
+   g.appendChild(E('path',{d:`M ${w*.06} ${h*.86} L ${w*.5} ${h*.08} L ${w*.94} ${h*.86} Z`,fill:'#b9a783',stroke:'#5f513d','stroke-width':2}));
+   g.appendChild(E('path',{d:`M ${w*.50} ${h*.08} L ${w*.50} ${h*.86}`,stroke:'#6f604b','stroke-width':2}));
+   g.appendChild(E('path',{d:`M ${w*.5} ${h*.08} L ${w*.72} ${h*.86} L ${w*.28} ${h*.86} Z`,fill:'#99886b',opacity:.55}));
+ }
+ else if(o.type==='table'){
+   g.appendChild(E('rect',{x:w*.10,y:h*.08,width:w*.80,height:h*.84,rx:6,fill:'#8b5a2f',stroke:'#5f391f','stroke-width':2}));
+   for(let xx=w*.18;xx<w*.85;xx+=Math.max(7,w*.12))g.appendChild(E('line',{x1:xx,y1:h*.1,x2:xx,y2:h*.9,stroke:'#c7925b','stroke-width':1.2}));
+ }
+ else if(o.type==='chair'){
+   g.appendChild(E('rect',{x:w*.18,y:h*.28,width:w*.64,height:h*.55,rx:5,fill:'#657b45',stroke:'#38452a','stroke-width':2}));
+   g.appendChild(E('line',{x1:w*.15,y1:h*.22,x2:w*.85,y2:h*.22,stroke:'#30382c','stroke-width':3}));
+   g.appendChild(E('line',{x1:w*.23,y1:h*.82,x2:w*.12,y2:h*.98,stroke:'#30382c','stroke-width':2}));
+   g.appendChild(E('line',{x1:w*.77,y1:h*.82,x2:w*.88,y2:h*.98,stroke:'#30382c','stroke-width':2}));
+ }
+ else if(o.type==='kitchen'){
+   g.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:6,fill:'#6e5b47',stroke:'#43382d','stroke-width':2}));
+   g.appendChild(E('circle',{cx:w*.28,cy:h*.5,r:Math.min(w,h)*.18,fill:'#242424',stroke:'#aaa','stroke-width':1}));
+   g.appendChild(E('circle',{cx:w*.58,cy:h*.5,r:Math.min(w,h)*.18,fill:'#242424',stroke:'#aaa','stroke-width':1}));
+   g.appendChild(E('rect',{x:w*.75,y:h*.18,width:w*.18,height:h*.64,rx:3,fill:'#aeb7b7'}));
+ }
+ else if(o.type==='fridge'){
+   g.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:7,fill:'#2d77a6',stroke:'#1c4f70','stroke-width':2}));
+   g.appendChild(E('rect',{x:w*.06,y:h*.06,width:w*.88,height:h*.32,rx:5,fill:'#ecece4'}));
+   g.appendChild(E('line',{x1:w*.15,y1:h*.42,x2:w*.85,y2:h*.42,stroke:'#1c4f70','stroke-width':2}));
+ }
+ else if(o.type==='bike'){
+   let cy=h*.58,r=Math.min(h*.30,w*.13);
+   g.appendChild(E('circle',{cx:w*.22,cy,r,fill:'none',stroke:'#252b2a','stroke-width':3}));
+   g.appendChild(E('circle',{cx:w*.78,cy,r,fill:'none',stroke:'#252b2a','stroke-width':3}));
+   g.appendChild(E('path',{d:`M ${w*.22} ${cy} L ${w*.45} ${h*.28} L ${w*.61} ${cy} L ${w*.35} ${cy} Z`,fill:'none',stroke:'#252b2a','stroke-width':3}));
+   g.appendChild(E('line',{x1:w*.45,y1:h*.28,x2:w*.78,y2:cy,stroke:'#252b2a','stroke-width':3}));
+   g.appendChild(E('line',{x1:w*.45,y1:h*.28,x2:w*.50,y2:h*.13,stroke:'#252b2a','stroke-width':2}));
+   g.appendChild(E('line',{x1:w*.48,y1:h*.14,x2:w*.58,y2:h*.14,stroke:'#252b2a','stroke-width':2}));
+ }
+ else if(o.type==='utility'){
+   g.appendChild(E('rect',{x:w*.25,y:h*.25,width:w*.5,height:h*.7,rx:3,fill:'#5e6060',stroke:'#343738','stroke-width':2}));
+   g.appendChild(E('circle',{cx:w*.50,cy:h*.28,r:Math.min(w,h)*.16,fill:'#f1c43b'}));
+   g.appendChild(E('path',{d:`M ${w*.62} ${h*.58} q ${w*.16} ${h*.12} 0 ${h*.25}`,fill:'none',stroke:'#4aa6db','stroke-width':3}));
+ }
+ if(sel===o.id)g.appendChild(E('rect',{x:-5,y:-5,width:w+10,height:h+10,rx:9,fill:'none',stroke:'#2675e8','stroke-width':4,'stroke-dasharray':'10 7'}));
+ svg.appendChild(g)
 }
-function fh(h){let hh=Math.floor(h),mm=Math.round((h-hh)*60);return String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0')}
+function fmt(h){let hh=Math.floor(h),mm=Math.round((h-hh)*60);return String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0')}
 function render(){
-  let {s,vw,vh}=S();svg.innerHTML='';
-  svg.appendChild(E('rect',{x:0,y:0,width:vw,height:vh,fill:groundFill()}));drawTexture(vw,vh);drawRoad(vw,vh,s);
-  let step=+gridStep.value;
-  for(let x=0;x<=plotW+.001;x+=step)svg.appendChild(E('line',{x1:x*s,y1:0,x2:x*s,y2:vh,stroke:'#fff','stroke-width':x%1===0?1.3:.7,opacity:.45}));
-  for(let y=0;y<=plotH+.001;y+=step)svg.appendChild(E('line',{x1:0,y1:y*s,x2:vw,y2:y*s,stroke:'#fff','stroke-width':y%1===0?1.3:.7,opacity:.45}));
-  let a=+north.value*Math.PI/180,cx=55,cy=58,L=30;svg.appendChild(E('line',{x1:cx,y1:cy,x2:cx+Math.sin(a)*L,y2:cy-Math.cos(a)*L,stroke:'#d22','stroke-width':4}));
-  let nt=E('text',{x:cx+Math.sin(a)*(L+15),y:cy-Math.cos(a)*(L+15)+5,'text-anchor':'middle','font-size':16,'font-weight':'700',fill:'#d22'});nt.textContent='N';svg.appendChild(nt);
-  let hr=+sunTime.value, sx=35+(vw-70)*(hr-7)/14, sy=32;svg.appendChild(E('circle',{cx:sx,cy:sy,r:17,fill:'#ffb400',stroke:'#ef8d00','stroke-width':3}));
-  if(shadows.checked){let dx=(hr-14)*5,dy=18;objs.filter(o=>['tree','van','tent','hedge'].includes(o.type)).forEach(o=>svg.appendChild(E('ellipse',{cx:(o.x+o.w/2)*s+dx,cy:(o.y+o.h/2)*s+dy,rx:o.w*s*.42,ry:o.h*s*.18,fill:'#000',opacity:.12})))}
-  objs.filter(o=>o.type==='floor').forEach(o=>drawObj(o,s));objs.filter(o=>o.type!=='floor').forEach(o=>drawObj(o,s));props()
+ let {s,vw,vh}=S();svg.innerHTML='';
+ svg.appendChild(E('rect',{x:0,y:0,width:vw,height:vh,fill:gh()}));texture(vw,vh);drawRoad(s,vw,vh);
+ let step=+document.getElementById('gridStep').value;
+ for(let x=0;x<=plotW+.001;x+=step)svg.appendChild(E('line',{x1:x*s,y1:0,x2:x*s,y2:vh,stroke:'#fff','stroke-width':x%1===0?1.2:.6,opacity:.34}));
+ for(let y=0;y<=plotH+.001;y+=step)svg.appendChild(E('line',{x1:0,y1:y*s,x2:vw,y2:y*s,stroke:'#fff','stroke-width':y%1===0?1.2:.6,opacity:.34}));
+ drawCompassAndSun(vw,vh);
+ if(document.getElementById('shadows').checked){
+   let sg=sunGeometry(vw,vh),cx=vw/2,cy=vh/2;
+   let vx=cx-sg.x,vy=cy-sg.y,mag=Math.hypot(vx,vy)||1;vx/=mag;vy/=mag;
+   objs.filter(o=>['tree','van','tent','hedge'].includes(o.type)).forEach(o=>{
+     let ox=(o.x+o.w/2)*s,oy=(o.y+o.h/2)*s;
+     svg.appendChild(E('ellipse',{cx:ox+vx*28,cy:oy+vy*28,rx:o.w*s*.42,ry:Math.max(6,o.h*s*.17),fill:'#000',opacity:.12,transform:`rotate(${Math.atan2(vy,vx)*180/Math.PI} ${ox+vx*28} ${oy+vy*28})`}))
+   })
+ }
+ objs.filter(o=>o.type==='floor').forEach(o=>drawObj(o,s));
+ objs.filter(o=>o.type!=='floor').forEach(o=>drawObj(o,s));
+ updateProps()
 }
-function props(){let o=current();none.classList.toggle('hidden',!!o);propsBox.classList.toggle('hidden',!o);if(!o)return;pname.textContent=D[o.type].n;px.value=o.x.toFixed(2);py.value=o.y.toFixed(2);pw.value=o.w.toFixed(2);ph.value=o.h.toFixed(2);rot.value=o.rot;rotVal.textContent=o.rot+'°';utilityProps.classList.toggle('hidden',o.type!=='utility');if(o.type==='utility'){cable.value=o.cable;hose.value=o.hose}}
-const plotWEl=plotW, plotHEl=plotH;
+function updateProps(){
+ let o=current(),props=document.getElementById('props');document.getElementById('none').classList.toggle('hidden',!!o);props.classList.toggle('hidden',!o);if(!o)return;
+ document.getElementById('pname').textContent=D[o.type].n+(o.locked?' · bloqueado':'');
+ document.getElementById('px').value=o.x.toFixed(2);document.getElementById('py').value=o.y.toFixed(2);document.getElementById('pw').value=o.w.toFixed(2);document.getElementById('ph').value=o.h.toFixed(2);
+ document.getElementById('rot').value=o.rot;document.getElementById('rotVal').textContent=o.rot+'°';document.getElementById('utilityProps').classList.toggle('hidden',o.type!=='utility');
+ if(o.type==='utility'){document.getElementById('cable').value=o.cable;document.getElementById('hose').value=o.hose}
+ document.getElementById('lock').textContent=o.locked?'🔓 Desbloquear':'🔒 Bloquear'
+}
 document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>add(b.dataset.add));
-apply.onclick=()=>{plotW=Math.max(3,+document.getElementById('plotW').value||10);plotH=Math.max(3,+document.getElementById('plotH').value||8);ground=document.getElementById('ground').value;roadSide=document.getElementById('roadSide').value;render()};
-gridStep.onchange=render;groundEl=document.getElementById('ground');roadEl=document.getElementById('roadSide');groundEl.onchange=()=>{ground=groundEl.value;render()};roadEl.onchange=()=>{roadSide=roadEl.value;render()};
-svg.addEventListener('pointerdown',e=>{let g=e.target.closest?.('.obj');if(!g){sel=null;render();return}sel=+g.dataset.id;let o=current(),p=SP(e),s=S().s;drag={id:o.id,dx:p.x/s-o.x,dy:p.y/s-o.y};svg.setPointerCapture(e.pointerId);render()});
-svg.addEventListener('pointermove',e=>{if(!drag)return;let o=objs.find(q=>q.id===drag.id),p=SP(e),s=S().s,snap=+gridStep.value/2;o.x=Math.max(0,Math.min(plotW-o.w,Math.round((p.x/s-drag.dx)/snap)*snap));o.y=Math.max(0,Math.min(plotH-o.h,Math.round((p.y/s-drag.dy)/snap)*snap));render()});
+document.getElementById('apply').onclick=()=>{plotW=Math.max(3,+document.getElementById('plotW').value||10);plotH=Math.max(3,+document.getElementById('plotH').value||8);ground=document.getElementById('ground').value;roadSide=document.getElementById('roadSide').value;render()};
+document.getElementById('ground').onchange=e=>{ground=e.target.value;render()};document.getElementById('roadSide').onchange=e=>{roadSide=e.target.value;render()};document.getElementById('gridStep').onchange=render;
+svg.addEventListener('pointerdown',e=>{let g=e.target.closest?.('.obj');if(!g){sel=null;render();return}sel=+g.dataset.id;let o=current();if(o.locked){render();return}let p=SP(e),s=S().s;drag={id:o.id,dx:p.x/s-o.x,dy:p.y/s-o.y};svg.setPointerCapture(e.pointerId);render()});
+svg.addEventListener('pointermove',e=>{if(!drag)return;let o=objs.find(q=>q.id===drag.id);if(!o||o.locked)return;let p=SP(e),s=S().s,snap=+document.getElementById('gridStep').value/2;o.x=Math.max(0,Math.min(plotW-o.w,Math.round((p.x/s-drag.dx)/snap)*snap));o.y=Math.max(0,Math.min(plotH-o.h,Math.round((p.y/s-drag.dy)/snap)*snap));render()});
 svg.addEventListener('pointerup',()=>drag=null);svg.addEventListener('pointercancel',()=>drag=null);
-const propsBox=document.getElementById('props'), none=document.getElementById('none'), pname=document.getElementById('pname'),utilityProps=document.getElementById('utilityProps');
-['px','py','pw','ph'].forEach(id=>document.getElementById(id).onchange=e=>{let o=current();if(!o)return;let key={px:'x',py:'y',pw:'w',ph:'h'}[id];o[key]=Math.max((key==='w'||key==='h')?.1:0,+e.target.value||0);render()});
-rot.oninput=e=>{let o=current();if(o){o.rot=+e.target.value;render()}};
-cable.onchange=e=>{let o=current();if(o){o.cable=+e.target.value;render()}};
-hose.onchange=e=>{let o=current();if(o){o.hose=+e.target.value;render()}};
-dup.onclick=()=>{let o=current();if(!o)return;let n={...o,id:idc++,x:Math.min(plotW-o.w,o.x+.5),y:Math.min(plotH-o.h,o.y+.5)};objs.push(n);sel=n.id;render()};
-del.onclick=()=>{objs=objs.filter(o=>o.id!==sel);sel=null;render()};
-north.oninput=e=>{northVal.textContent=e.target.value+'°';render()};sunTime.oninput=e=>{sunLabel.textContent=fh(+e.target.value);render()};shadows.onchange=render;
-save.onclick=()=>localStorage.setItem('campingPWA',JSON.stringify({plotW,plotH,ground,roadSide,objs,idc,north:+north.value,sun:+sunTime.value,date:date.value}));
-load.onclick=()=>{let d=JSON.parse(localStorage.getItem('campingPWA')||'null');if(!d)return;plotW=d.plotW;plotH=d.plotH;ground=d.ground||'grass';roadSide=d.roadSide||'top';objs=d.objs||[];idc=d.idc||1;document.getElementById('plotW').value=plotW;document.getElementById('plotH').value=plotH;groundEl.value=ground;roadEl.value=roadSide;north.value=d.north||0;sunTime.value=d.sun||13;date.value=d.date||'';render()};
-reset.onclick=()=>{plotW=10;plotH=8;ground='grass';roadSide='top';objs=[];sel=null;document.getElementById('plotW').value=10;document.getElementById('plotH').value=8;groundEl.value='grass';roadEl.value='top';render()};
-date.value=new Date().toISOString().slice(0,10);
-add('floor');current().x=3.1;current().y=2.7;current().w=5.7;current().h=4.5;
-add('van');current().x=.7;current().y=1.1;add('table');current().x=6;current().y=4.7;add('kitchen');current().x=5.2;current().y=1.5;add('fridge');current().x=6.55;current().y=1.55;add('bike');current().x=4.5;current().y=6.5;add('tree');current().x=8.2;current().y=.7;add('hedge');current().x=5.2;current().y=.45;current().w=2.8;add('utility');current().x=9.1;current().y=6.4;sel=null;render();
+['px','py','pw','ph'].forEach(id=>document.getElementById(id).onchange=e=>{let o=current();if(!o||o.locked)return;let key={px:'x',py:'y',pw:'w',ph:'h'}[id];o[key]=Math.max((key==='w'||key==='h')?.1:0,+e.target.value||0);render()});
+document.getElementById('rot').oninput=e=>{let o=current();if(o&&!o.locked){o.rot=+e.target.value;render()}};
+document.getElementById('cable').onchange=e=>{let o=current();if(o){o.cable=+e.target.value;render()}};
+document.getElementById('hose').onchange=e=>{let o=current();if(o){o.hose=+e.target.value;render()}};
+function dup(){let o=current();if(!o)return;let n={...o,id:idc++,locked:false,x:Math.min(plotW-o.w,o.x+.5),y:Math.min(plotH-o.h,o.y+.5)};objs.push(n);sel=n.id;render()}
+function del(){objs=objs.filter(o=>o.id!==sel);sel=null;render()}
+document.getElementById('dup').onclick=dup;document.getElementById('dup2').onclick=dup;document.getElementById('del').onclick=del;document.getElementById('del2').onclick=del;
+document.getElementById('rotate90').onclick=()=>{let o=current();if(o&&!o.locked){o.rot=(o.rot+90)%360;render()}};
+document.getElementById('lock').onclick=()=>{let o=current();if(o){o.locked=!o.locked;render()}};
+document.getElementById('north').oninput=e=>{document.getElementById('northVal').textContent=e.target.value+'°';render()};
+document.getElementById('sunTime').oninput=e=>{document.getElementById('sunLabel').textContent=fmt(+e.target.value);render()};
+document.getElementById('shadows').onchange=render;
+document.getElementById('save').onclick=()=>localStorage.setItem('campingLayoutV3',JSON.stringify({plotW,plotH,ground,roadSide,objs,idc,north:+document.getElementById('north').value,sun:+document.getElementById('sunTime').value}));
+document.getElementById('load').onclick=()=>{let d=JSON.parse(localStorage.getItem('campingLayoutV3')||'null');if(!d)return;plotW=d.plotW;plotH=d.plotH;ground=d.ground||'grass';roadSide=d.roadSide||'top';objs=d.objs||[];idc=d.idc||1;document.getElementById('plotW').value=plotW;document.getElementById('plotH').value=plotH;document.getElementById('ground').value=ground;document.getElementById('roadSide').value=roadSide;document.getElementById('north').value=d.north||0;document.getElementById('sunTime').value=d.sun||13;sel=null;render()};
+document.getElementById('reset').onclick=()=>{plotW=10;plotH=8;ground='grass';roadSide='top';objs=[];sel=null;document.getElementById('plotW').value=10;document.getElementById('plotH').value=8;document.getElementById('ground').value='grass';document.getElementById('roadSide').value='top';render()};
+
+// initial example
+add('floor');current().x=3.1;current().y=2.5;current().w=5.8;current().h=4.6;
+add('van');current().x=.8;current().y=1.3;
+add('table');current().x=5.7;current().y=4.5;
+add('chair');current().x=5.1;current().y=4.6;
+add('chair');current().x=7.0;current().y=4.6;
+add('kitchen');current().x=7.4;current().y=2.6;
+add('fridge');current().x=8.7;current().y=2.7;
+add('bike');current().x=4.3;current().y=6.6;
+add('tree');current().x=8.1;current().y=.8;
+add('hedge');current().x=6.4;current().y=.45;current().w=2.7;
+add('utility');current().x=9.1;current().y=6.5;
+sel=null;render();
+
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
 </script>
-</body>
-</html>
+</body></html>

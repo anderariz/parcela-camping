@@ -3,7 +3,7 @@
   "short_name": "Parcela Camping",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#eef2ee",
+  "background_color": "#edf2ee",
   "theme_color": "#173f2a",
   "orientation": "any",
   "icons": [
