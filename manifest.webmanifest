@@ -1,10 +1,10 @@
 {
-  "name": "Simulador de parcela de camping",
+  "name": "Parcela Camping",
   "short_name": "Parcela Camping",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f5f7fa",
-  "theme_color": "#1677ff",
+  "background_color": "#eef2ee",
+  "theme_color": "#173f2a",
   "orientation": "any",
   "icons": [
     {
