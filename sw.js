@@ -1,4 +1,4 @@
-const CACHE='camping-layout-v10-iphone';
+const CACHE='camping-layout-v10-1-iphone';
 const STATIC=['./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 
 self.addEventListener('install',event=>{
