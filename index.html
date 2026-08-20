@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#08111b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Parcela Camping">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Parcela Camping V14</title>
+<style>
+:root{
+  --bg:#071018;--panel:#0d1822;--panel2:#132230;--line:#263a4b;
+  --text:#eef6fc;--muted:#91a5b6;--blue:#0a84ff;--danger:#ff5a66;
+  --shadow:0 18px 56px rgba(0,0,0,.46)
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button,input,select{font:inherit}
+button{border:1px solid var(--line);background:#132331;color:var(--text);border-radius:12px}
+button:disabled{opacity:.35}
+#app{position:fixed;inset:0;background:#071018}
+#stageWrap{position:absolute;inset:0;background:#08131d;overflow:hidden}
+#stage{width:100%;height:100%;display:block;touch-action:none}
+.watermark{position:fixed;right:12px;bottom:8px;font-size:10px;color:rgba(220,233,243,.28);z-index:4;pointer-events:none}
+
+.leftbar{
+  position:fixed;left:max(8px,env(safe-area-inset-left));top:50%;transform:translateY(-50%);
+  width:82px;padding:8px 5px;display:flex;flex-direction:column;gap:3px;
+  background:rgba(10,20,30,.92);border:1px solid var(--line);border-radius:22px;
+  box-shadow:var(--shadow);backdrop-filter:blur(16px);z-index:120
+}
+.leftbar button{border:0;background:transparent;padding:8px 2px;font-size:11px;color:#c9d9e6}
+.leftbar .ico{display:block;font-size:21px;color:var(--blue);margin-bottom:2px}
+
+.navpad{
+  position:fixed;right:max(8px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);
+  display:grid;grid-template-columns:38px 38px 38px;grid-template-rows:38px 38px 38px;gap:3px;
+  padding:5px;background:rgba(10,20,30,.92);border:1px solid var(--line);border-radius:16px;
+  box-shadow:var(--shadow);backdrop-filter:blur(16px);z-index:125
+}
+.navpad button{width:38px;height:38px;padding:0;border-radius:10px;font-size:18px}
+.navpad span{width:38px;height:38px}
+
+.history{
+  position:fixed;left:calc(max(8px,env(safe-area-inset-left)) + 90px);top:10px;
+  display:flex;gap:6px;z-index:126
+}
+.history button{width:42px;height:42px;padding:0;font-size:20px;background:rgba(10,20,30,.92);box-shadow:var(--shadow)}
+
+.context{
+  position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:130;
+  display:none;gap:3px;padding:5px;background:rgba(10,20,30,.94);border:1px solid var(--line);
+  border-radius:15px;box-shadow:var(--shadow);backdrop-filter:blur(16px)
+}
+.context.show{display:flex}
+.context button{border:0;padding:8px 10px;font-size:12px}
+
+.backdrop{position:fixed;inset:0;background:rgba(0,5,10,.67);backdrop-filter:blur(8px);z-index:300;display:none}
+.backdrop.open{display:block}
+.panel{
+  position:fixed;z-index:310;top:10px;bottom:10px;right:10px;width:min(760px,46vw);
+  padding:14px;overflow:auto;background:linear-gradient(180deg,#101c28,#08121c);
+  border:1px solid #24384a;border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.58);
+  transform:translateX(calc(100% + 30px));transition:transform .22s ease
+}
+.panel.open{transform:translateX(0)}
+.panelHead{position:sticky;top:-14px;background:#101c28;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:4px 0 10px}
+.panelHead h2{margin:0;font-size:20px}
+.closeBtn{width:42px;height:42px;padding:0;font-size:20px}
+.group{margin:12px 0}
+.groupTitle{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 8px}
+label{display:grid;gap:5px;font-size:12px;color:var(--muted);margin-bottom:9px}
+input,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:#132331;color:var(--text)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.primary{width:100%;background:var(--blue);border-color:var(--blue);color:#fff}
+.danger{color:var(--danger)}
+.note{font-size:11px;color:#9fb2c1;background:#101d29;padding:9px 10px;border-radius:10px}
+
+.categoryTabs{display:flex;gap:6px;overflow:auto;margin-bottom:10px}
+.categoryTabs button{white-space:nowrap;padding:8px 12px}
+.categoryTabs .active{background:var(--blue);border-color:var(--blue)}
+.searchBox{display:flex;align-items:center;gap:6px;padding:0 10px;background:#0b1722;border:1px solid #25394c;border-radius:12px;margin-bottom:12px}
+.searchBox input{border:0;background:transparent;padding:11px 2px;outline:0}
+.library{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.library button{
+  min-height:128px;padding:8px;display:grid;grid-template-rows:92px auto;gap:5px;text-align:center;
+  background:linear-gradient(180deg,#172636,#101b27);border:1px solid #2a4054;border-radius:14px;overflow:hidden
+}
+.library img{width:100%;height:92px;object-fit:contain;display:block}
+.library .emoji{font-size:42px;display:flex;align-items:center;justify-content:center;height:92px}
+.library .name{font-size:11px;font-weight:700;color:#dcecff}
+
+@media (orientation:portrait){
+  .leftbar{left:0;right:0;top:auto;bottom:0;transform:none;width:auto;flex-direction:row;justify-content:space-around;border-radius:0;padding-bottom:max(7px,env(safe-area-inset-bottom))}
+  .leftbar button{min-width:58px}
+  .navpad{top:72px;right:8px;transform:none}
+  .history{left:10px;top:10px}
+  .panel{left:8px;right:8px;top:auto;bottom:8px;width:auto;max-height:72vh;transform:translateY(calc(100% + 30px))}
+  .panel.open{transform:translateY(0)}
+  .library{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .context{bottom:78px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stageWrap"><svg id="stage" viewBox="0 0 1200 900"></svg></div>
+
+  <div class="history">
+    <button id="undoBtn" aria-label="Deshacer">↶</button>
+    <button id="redoBtn" aria-label="Rehacer">↷</button>
+  </div>
+
+  <div class="leftbar">
+    <button id="parcelBtn"><span class="ico">🏕️</span>Parcela</button>
+    <button id="elementsBtn"><span class="ico">▦</span>Elementos</button>
+    <button id="gridBtn"><span class="ico">▦</span>Rejilla</button>
+    <button id="clearBtn"><span class="ico">⌫</span>Limpiar</button>
+  </div>
+
+  <div class="navpad" aria-label="Navegación">
+    <span></span><button id="panUp">▲</button><span></span>
+    <button id="panLeft">◀</button><button id="fitBtn">⌗</button><button id="panRight">▶</button>
+    <button id="zoomOut">−</button><button id="panDown">▼</button><button id="zoomIn">+</button>
+  </div>
+
+  <div id="context" class="context">
+    <button id="rotateBtn">↻ Girar</button>
+    <button id="duplicateBtn">⧉ Duplicar</button>
+    <button id="measureBtn">📐 Medidas</button>
+    <button id="lockBtn">🔒</button>
+    <button id="deleteBtn" class="danger">🗑</button>
+  </div>
+
+  <div class="watermark">Parcela Camping · V14</div>
+
+  <div id="backdrop" class="backdrop"></div>
+
+  <section id="parcelPanel" class="panel">
+    <div class="panelHead"><h2>🏕️ Parcela</h2><button class="closeBtn" data-close>✕</button></div>
+    <div class="group">
+      <div class="groupTitle">Selector</div>
+      <label>Parcela
+        <select id="plotSelect"></select>
+      </label>
+      <div id="customBox" style="display:none">
+        <div class="row">
+          <label>Ancho (m)<input id="customW" type="number" min="3" step=".1" value="9"></label>
+          <label>Largo (m)<input id="customH" type="number" min="3" step=".1" value="10"></label>
+        </div>
+        <label>Suelo
+          <select id="customGround"><option value="grass">Hierba</option><option value="gravel">Grava</option></select>
+        </label>
+        <label>Pasillo / calle
+          <select id="customRoad">
+            <option value="top">Arriba</option><option value="right">Derecha</option>
+            <option value="bottom">Abajo</option><option value="left">Izquierda</option>
+          </select>
+        </label>
+      </div>
+      <div id="plotSummary" class="note"></div>
+      <label style="display:flex;grid-template-columns:auto 1fr;align-items:center;gap:8px;color:var(--text)">
+        <input id="keepGear" type="checkbox" checked style="width:auto"> Mantener mis elementos al cambiar de parcela
+      </label>
+      <button id="loadPlotBtn" class="primary">Cargar parcela</button>
+    </div>
+  </section>
+
+  <section id="elementsPanel" class="panel">
+    <div class="panelHead"><h2>Elementos</h2><button class="closeBtn" data-close>✕</button></div>
+    <div class="categoryTabs">
+      <button class="cat active" data-cat="all">Todos</button>
+      <button class="cat" data-cat="vehicle">Vehículos</button>
+      <button class="cat" data-cat="tent">Tiendas</button>
+      <button class="cat" data-cat="furniture">Mobiliario</button>
+      <button class="cat" data-cat="kitchen">Cocina</button>
+      <button class="cat" data-cat="other">Otros</button>
+    </div>
+    <div class="searchBox"><span>⌕</span><input id="searchInput" type="search" placeholder="Buscar elemento…"></div>
+    <div id="library" class="library"></div>
+  </section>
+
+  <section id="propsPanel" class="panel">
+    <div class="panelHead"><h2>📐 Medidas</h2><button class="closeBtn" data-close>✕</button></div>
+    <div class="row">
+      <label>Ancho (m)<input id="objW" type="number" step=".05"></label>
+      <label>Largo (m)<input id="objH" type="number" step=".05"></label>
+    </div>
+    <button id="applyObjBtn" class="primary">Aplicar medidas</button>
+  </section>
+</div>
+
+<script>
+'use strict';
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load',()=>navigator.serviceWorker.getRegistrations().then(rs=>Promise.all(rs.map(r=>r.unregister()))).catch(()=>{}));
+}
+const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg',svg=$('stage');
+
+const TYPES={
+  car:{name:'Coche',cat:'vehicle',w:1.8,h:4.5,emoji:'🚗'},
+  van:{name:'VW T4',cat:'vehicle',w:1.84,h:4.78,img:'van_t4.png'},
+  bigvan:{name:'Furgoneta',cat:'vehicle',w:2.05,h:6,emoji:'🚐'},
+  caravan:{name:'Caravana',cat:'vehicle',w:2.3,h:6.5,emoji:'🏕️'},
+  motorhome:{name:'Autocaravana',cat:'vehicle',w:2.35,h:7,emoji:'🚌'},
+  tent_green:{name:'Tienda compacta',cat:'tent',w:2.4,h:2.4,img:'tent_green.png'},
+  tent_family:{name:'Tienda familiar',cat:'tent',w:4.6,h:3.5,img:'tent_family.png'},
+  tent_gazebo:{name:'Pabellón / base',cat:'tent',w:3,h:3,img:'tent_gazebo.png'},
+  floor:{name:'Tela suelo',cat:'other',w:3,h:3,emoji:'▦'},
+  table:{name:'Mesa',cat:'furniture',w:1.8,h:.75,img:'table.png'},
+  chair:{name:'Silla',cat:'furniture',w:.62,h:.72,img:'chair.png'},
+  cooler:{name:'Nevera portátil',cat:'kitchen',w:.85,h:.5,img:'cooler.png'},
+  stove:{name:'Cocina',cat:'kitchen',w:.65,h:.4,img:'stove.png'},
+  bike:{name:'Bicicleta',cat:'other',w:1.8,h:.55,emoji:'🚲'},
+  tree:{name:'Árbol',cat:'other',w:1.2,h:1.2,emoji:'🌳',fixed:true},
+  hedge:{name:'Seto',cat:'other',w:2.5,h:.45,emoji:'🌿',fixed:true},
+  utility:{name:'Luz + agua',cat:'other',w:.35,h:.35,emoji:'⚡💧',fixed:true}
+};
+
+const PLOTS=Array.from({length:30},(_,i)=>({
+  id:'A'+String(i+1).padStart(2,'0'),
+  w:+(8+(i%5)*.45).toFixed(2),
+  h:+(9+((i*3)%5)*.45).toFixed(2),
+  road:['top','right','bottom','left'][i%4],
+  ground:(i%5===4?'gravel':'grass'),
+  seed:(i+1)*97
+}));
+
+let plotW=9,plotH=10,ground='grass',roadSide='top',grid=true;
+let objs=[],sel=null,idc=1,view={x:0,y:0,scale:1};
+let drag=null,pointers=new Map(),gesture=null;
+let undoStack=[],redoStack=[];
+let activeCat='all';
+
+function E(tag,a={}){const n=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(a))n.setAttribute(k,v);return n}
+function cur(){return objs.find(o=>o.id===sel)}
+function seeded(s){return()=>((s=(s*1664525+1013904223)>>>0)/4294967296)}
+function snapshot(){return JSON.stringify({plotW,plotH,ground,roadSide,grid,objs,idc})}
+function restore(s){const d=JSON.parse(s);plotW=d.plotW;plotH=d.plotH;ground=d.ground;roadSide=d.roadSide;grid=d.grid;objs=d.objs||[];idc=d.idc||1;sel=null;fit()}
+function pushUndo(){undoStack.push(snapshot());if(undoStack.length>50)undoStack.shift();redoStack=[];syncHistory()}
+function syncHistory(){$('undoBtn').disabled=!undoStack.length;$('redoBtn').disabled=!redoStack.length}
+function undo(){if(!undoStack.length)return;redoStack.push(snapshot());restore(undoStack.pop());syncHistory()}
+function redo(){if(!redoStack.length)return;undoStack.push(snapshot());restore(redoStack.pop());syncHistory()}
+
+function infra(p){
+  const r=seeded(p.seed),a=[];
+  const add=(type,x,y,w,h,rot=0)=>a.push({id:idc++,type,x,y,w,h,rot,locked:true,fixed:true});
+  for(let i=0;i<2+p.seed%3;i++){let d=.9+r()*.7,x=.3+r()*Math.max(.3,p.w-d-.6),y=.3+r()*Math.max(.3,p.h-d-.6);add('tree',x,y,d,d)}
+  const sides=['top','right','bottom','left'].filter(s=>s!==p.road),hs=sides[p.seed%sides.length];
+  if(hs==='top')add('hedge',.1,.05,p.w-.2,.4);
+  if(hs==='bottom')add('hedge',.1,p.h-.45,p.w-.2,.4);
+  if(hs==='left')add('hedge',.05,.1,p.h-.2,.4,90);
+  if(hs==='right')add('hedge',p.w-.45,.1,p.h-.2,.4,90);
+  let ux=p.w*.5,uy=.12;if(p.road==='bottom')uy=p.h-.47;if(p.road==='left'){ux=.12;uy=p.h*.5}if(p.road==='right'){ux=p.w-.47;uy=p.h*.5}
+  add('utility',ux,uy,.35,.35);
+  return a;
+}
+
+function scene(){
+  const W=1200,H=900,m=72,road=60;
+  const aw=W-m*2-(['left','right'].includes(roadSide)?road:0);
+  const ah=H-m*2-(['top','bottom'].includes(roadSide)?road:0);
+  const s=Math.min(aw/plotW,ah/plotH);
+  let ox=(W-plotW*s)/2,oy=(H-plotH*s)/2;
+  if(roadSide==='top')oy+=road/2;if(roadSide==='bottom')oy-=road/2;if(roadSide==='left')ox+=road/2;if(roadSide==='right')ox-=road/2;
+  return{W,H,s,ox,oy,road};
+}
+
+function defs(){
+  const d=E('defs');
+  const grass=E('pattern',{id:'grass',width:44,height:44,patternUnits:'userSpaceOnUse'});
+  grass.appendChild(E('rect',{width:44,height:44,fill:'#4f7135'}));
+  [[5,7,1.4,'#6f914f'],[19,13,1.2,'#3f612d'],[34,8,1.1,'#7c9956'],[11,31,1.2,'#365725'],[30,29,1.5,'#618341']].forEach(a=>grass.appendChild(E('circle',{cx:a[0],cy:a[1],r:a[2],fill:a[3],opacity:.82})));
+  d.appendChild(grass);
+  const gravel=E('pattern',{id:'gravel',width:42,height:42,patternUnits:'userSpaceOnUse'});
+  gravel.appendChild(E('rect',{width:42,height:42,fill:'#9f9a91'}));
+  [[6,8,2.2,'#76736c'],[17,5,1.7,'#d0cbc0'],[31,11,2.2,'#858078'],[10,25,2,'#c6c0b4'],[27,30,3,'#77736d']].forEach(a=>gravel.appendChild(E('ellipse',{cx:a[0],cy:a[1],rx:a[2],ry:a[2]*.7,fill:a[3]})));
+  d.appendChild(gravel);
+  svg.appendChild(d);
+}
+
+function drawObj(o,g){
+  const{s,ox,oy}=g,w=o.w*s,h=o.h*s,x=ox+o.x*s,y=oy+o.y*s;
+  const gr=E('g',{class:'obj','data-id':o.id,transform:`translate(${x} ${y}) rotate(${o.rot} ${w/2} ${h/2})`});
+  gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:Math.min(w,h)*.08,fill:'rgba(0,0,0,.001)',class:'hit'}));
+  const t=TYPES[o.type];
+  if(t?.img){
+    const im=E('image',{x:0,y:0,width:w,height:h,href:t.img,preserveAspectRatio:'xMidYMid meet'});
+    im.setAttribute('pointer-events','none');gr.appendChild(im);
+  }else if(o.type==='tree'){
+    gr.appendChild(E('ellipse',{cx:w*.54,cy:h*.58,rx:w*.38,ry:h*.34,fill:'#000',opacity:.25}));
+    [[.42,.40,.34],[.64,.44,.31],[.49,.64,.34],[.30,.59,.27]].forEach((a,i)=>gr.appendChild(E('circle',{cx:w*a[0],cy:h*a[1],r:Math.min(w,h)*a[2],fill:i%2?'#4b7b38':'#5e8d43'})));
+  }else if(o.type==='hedge'){
+    gr.appendChild(E('rect',{x:0,y:h*.18,width:w,height:h*.64,rx:h*.28,fill:'#376c36',stroke:'#244b2c','stroke-width':1.4}));
+  }else if(o.type==='utility'){
+    gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:5,fill:'#293746'}));
+    const tx=E('text',{x:w/2,y:h*.67,'text-anchor':'middle','font-size':Math.max(12,h*.52)});tx.textContent='⚡💧';gr.appendChild(tx);
+  }else if(o.type==='floor'){
+    gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:3,fill:'#252d2f',stroke:'#6a7779','stroke-width':1.2}));
+  }else if(o.type==='bike'){
+    const r=Math.min(w,h)*.32,cy=h*.52;
+    gr.appendChild(E('circle',{cx:w*.19,cy,r,fill:'none',stroke:'#a7b5bf','stroke-width':3}));
+    gr.appendChild(E('circle',{cx:w*.81,cy,r,fill:'none',stroke:'#a7b5bf','stroke-width':3}));
+    gr.appendChild(E('path',{d:`M ${w*.19} ${cy} L ${w*.46} ${h*.32} L ${w*.60} ${cy} L ${w*.34} ${cy} Z`,fill:'none',stroke:'#d37438','stroke-width':3}));
+  }else{
+    gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:Math.min(w,h)*.12,fill:'#6d777b',stroke:'#1f2b34','stroke-width':2}));
+    if(t?.emoji){const tx=E('text',{x:w/2,y:h*.62,'text-anchor':'middle','font-size':Math.max(14,Math.min(w,h)*.45)});tx.textContent=t.emoji;gr.appendChild(tx)}
+  }
+  if(sel===o.id){
+    gr.appendChild(E('rect',{x:-6,y:-6,width:w+12,height:h+12,rx:9,fill:'none',stroke:'#0a84ff','stroke-width':4,'stroke-dasharray':'10 6'}));
+  }
+  svg.appendChild(gr);
+}
+
+function render(){
+  svg.innerHTML='';defs();
+  const world=E('g',{transform:`translate(${view.x} ${view.y}) scale(${view.scale})`});svg.appendChild(world);
+  const append=svg.appendChild.bind(svg);svg.appendChild=n=>world.appendChild(n);
+  const g=scene(),{W,H,s,ox,oy,road}=g;
+  svg.appendChild(E('rect',{x:0,y:0,width:W,height:H,fill:'#08131d'}));
+  svg.appendChild(E('rect',{x:ox+8,y:oy+10,width:plotW*s,height:plotH*s,rx:8,fill:'#000',opacity:.32}));
+  svg.appendChild(E('rect',{x:ox,y:oy,width:plotW*s,height:plotH*s,rx:7,fill:ground==='grass'?'url(#grass)':'url(#gravel)',stroke:'#8499a8','stroke-width':1.4}));
+  if(grid){
+    for(let x=0;x<=plotW;x+=.5)svg.appendChild(E('line',{x1:ox+x*s,y1:oy,x2:ox+x*s,y2:oy+plotH*s,stroke:'#dceaf5','stroke-width':.55,opacity:.14}));
+    for(let y=0;y<=plotH;y+=.5)svg.appendChild(E('line',{x1:ox,y1:oy+y*s,x2:ox+plotW*s,y2:oy+y*s,stroke:'#dceaf5','stroke-width':.55,opacity:.14}));
+  }
+  let rr;if(roadSide==='top')rr={x:ox,y:oy-road,width:plotW*s,height:road};if(roadSide==='bottom')rr={x:ox,y:oy+plotH*s,width:plotW*s,height:road};if(roadSide==='left')rr={x:ox-road,y:oy,width:road,height:plotH*s};if(roadSide==='right')rr={x:ox+plotW*s,y:oy,width:road,height:plotH*s};
+  svg.appendChild(E('rect',{...rr,fill:'#8f7b5b'}));
+  [
+    ...objs.filter(o=>o.type==='floor'),
+    ...objs.filter(o=>o.type==='chair'),
+    ...objs.filter(o=>!['floor','chair','table'].includes(o.type)),
+    ...objs.filter(o=>o.type==='table')
+  ].forEach(o=>drawObj(o,g));
+  svg.appendChild=append;
+  $('context').classList.toggle('show',!!cur());
+  $('lockBtn').textContent=cur()?.locked?'🔓':'🔒';
+}
+
+function fit(){view={x:0,y:0,scale:1};render()}
+function add(type){
+  const t=TYPES[type];if(!t)return;
+  pushUndo();
+  const o={id:idc++,type,x:Math.max(.2,(plotW-t.w)/2),y:Math.max(.2,(plotH-t.h)/2),w:t.w,h:t.h,rot:0,locked:false,fixed:false};
+  objs.push(o);sel=o.id;closePanels();render();
+}
+function loadPreset(id,keep=false){
+  const p=PLOTS.find(x=>x.id===id)||PLOTS[0];
+  const gear=keep?objs.filter(o=>!o.fixed).map(o=>({...o})):[];
+  plotW=p.w;plotH=p.h;ground=p.ground;roadSide=p.road;objs=infra(p);
+  for(const o of gear){o.x=Math.max(0,Math.min(o.x,Math.max(0,plotW-o.w)));o.y=Math.max(0,Math.min(o.y,Math.max(0,plotH-o.h)));objs.push(o)}
+  sel=null;fit();
+}
+function loadCustom(keep=false){
+  const gear=keep?objs.filter(o=>!o.fixed).map(o=>({...o})):[];
+  plotW=Math.max(3,+$('customW').value||9);plotH=Math.max(3,+$('customH').value||10);
+  ground=$('customGround').value;roadSide=$('customRoad').value;objs=[];
+  for(const o of gear){o.x=Math.max(0,Math.min(o.x,Math.max(0,plotW-o.w)));o.y=Math.max(0,Math.min(o.y,Math.max(0,plotH-o.h)));objs.push(o)}
+  sel=null;fit();
+}
+
+function openPanel(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('open'));$('backdrop').classList.add('open');$(id).classList.add('open')}
+function closePanels(){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('open'));$('backdrop').classList.remove('open')}
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=closePanels);$('backdrop').onclick=closePanels;
+
+$('parcelBtn').onclick=()=>openPanel('parcelPanel');
+$('elementsBtn').onclick=()=>openPanel('elementsPanel');
+$('gridBtn').onclick=()=>{pushUndo();grid=!grid;render()};
+$('clearBtn').onclick=()=>{if(!confirm('¿Seguro que quieres eliminar todos tus elementos de la parcela?'))return;pushUndo();objs=objs.filter(o=>o.fixed);sel=null;render()};
+$('undoBtn').onclick=undo;$('redoBtn').onclick=redo;
+
+function clampView(){view.scale=Math.max(.55,Math.min(3.5,view.scale));view.x=Math.max(-1000,Math.min(1000,view.x));view.y=Math.max(-800,Math.min(800,view.y))}
+function panBy(dx,dy){view.x+=dx;view.y+=dy;clampView();render()}
+function zoomBy(f){const old=view.scale,next=Math.max(.55,Math.min(3.5,old*f)),cx=600,cy=450;view.x=cx-(cx-view.x)*(next/old);view.y=cy-(cy-view.y)*(next/old);view.scale=next;clampView();render()}
+$('panUp').onclick=()=>panBy(0,80);$('panDown').onclick=()=>panBy(0,-80);$('panLeft').onclick=()=>panBy(95,0);$('panRight').onclick=()=>panBy(-95,0);$('zoomIn').onclick=()=>zoomBy(1.22);$('zoomOut').onclick=()=>zoomBy(1/1.22);$('fitBtn').onclick=fit;
+
+$('rotateBtn').onclick=()=>{const o=cur();if(o&&!o.locked){pushUndo();o.rot=(o.rot+90)%360;render()}};
+$('duplicateBtn').onclick=()=>{const o=cur();if(!o)return;pushUndo();const n={...o,id:idc++,x:Math.min(plotW-o.w,o.x+.5),y:Math.min(plotH-o.h,o.y+.5),locked:false,fixed:false};objs.push(n);sel=n.id;render()};
+$('lockBtn').onclick=()=>{const o=cur();if(o){pushUndo();o.locked=!o.locked;render()}};
+$('deleteBtn').onclick=()=>{const o=cur();if(!o||o.fixed)return;if(!confirm('¿Seguro que quieres eliminar este elemento?'))return;pushUndo();objs=objs.filter(x=>x.id!==sel);sel=null;render()};
+$('measureBtn').onclick=()=>{const o=cur();if(!o||o.fixed)return;$('objW').value=o.w;$('objH').value=o.h;openPanel('propsPanel')};
+$('applyObjBtn').onclick=()=>{const o=cur();if(!o||o.fixed)return;pushUndo();o.w=Math.max(.1,+$('objW').value||o.w);o.h=Math.max(.1,+$('objH').value||o.h);closePanels();render()};
+
+const plotSelect=$('plotSelect');
+plotSelect.innerHTML='<option value="custom">Personalizada…</option>'+PLOTS.map(p=>`<option value="${p.id}">${p.id} · ${p.w}×${p.h} m</option>`).join('');
+function syncPlotUI(){
+  const custom=plotSelect.value==='custom';$('customBox').style.display=custom?'block':'none';
+  if(custom){$('plotSummary').textContent='Define medidas, suelo y posición de calle.';return}
+  const p=PLOTS.find(x=>x.id===plotSelect.value)||PLOTS[0];$('plotSummary').textContent=`${p.id} · ${p.w} × ${p.h} m · calle ${{top:'arriba',right:'derecha',bottom:'abajo',left:'izquierda'}[p.road]}`;
+}
+plotSelect.onchange=syncPlotUI;
+$('loadPlotBtn').onclick=()=>{pushUndo();const keep=$('keepGear').checked;if(plotSelect.value==='custom')loadCustom(keep);else loadPreset(plotSelect.value,keep);closePanels()};
+
+const library=$('library');
+function libraryHTML(){
+  return Object.entries(TYPES).filter(([k,t])=>!t.fixed).map(([k,t])=>{
+    const visual=t.img?`<img src="${t.img}" alt="">`:`<div class="emoji">${t.emoji||'◻︎'}</div>`;
+    return `<button data-add="${k}" data-cat="${t.cat}" data-name="${t.name.toLowerCase()}">${visual}<span class="name">${t.name}</span></button>`;
+  }).join('');
+}
+library.innerHTML=libraryHTML();
+library.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>add(b.dataset.add));
+function filterLibrary(){
+  const q=($('searchInput').value||'').trim().toLowerCase();
+  library.querySelectorAll('[data-add]').forEach(b=>{const okCat=activeCat==='all'||b.dataset.cat===activeCat,okQ=!q||b.dataset.name.includes(q);b.style.display=okCat&&okQ?'grid':'none'})
+}
+document.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{document.querySelectorAll('.cat').forEach(x=>x.classList.remove('active'));b.classList.add('active');activeCat=b.dataset.cat;filterLibrary()});
+$('searchInput').oninput=filterLibrary;
+
+function mapPoint(e){
+  const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;
+  let q=p.matrixTransform(svg.getScreenCTM().inverse());q.x=(q.x-view.x)/view.scale;q.y=(q.y-view.y)/view.scale;
+  const g=scene();return{x:(q.x-g.ox)/g.s,y:(q.y-g.oy)/g.s}
+}
+svg.addEventListener('pointerdown',e=>{
+  svg.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pointers.size===2){
+    const a=[...pointers.values()],dx=a[1].x-a[0].x,dy=a[1].y-a[0].y;gesture={d:Math.hypot(dx,dy),mx:(a[0].x+a[1].x)/2,my:(a[0].y+a[1].y)/2,v:{...view}};drag=null;return
+  }
+  const target=e.target.closest?.('.obj');
+  if(!target){sel=null;drag={pan:true,x:e.clientX,y:e.clientY,vx:view.x,vy:view.y};render();return}
+  sel=+target.dataset.id;const o=cur();if(o.locked){render();return}
+  pushUndo();const p=mapPoint(e);drag={id:o.id,dx:p.x-o.x,dy:p.y-o.y};render()
+});
+svg.addEventListener('pointermove',e=>{
+  if(pointers.has(e.pointerId))pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pointers.size===2&&gesture){
+    const a=[...pointers.values()],dx=a[1].x-a[0].x,dy=a[1].y-a[0].y;
+    view.scale=Math.max(.55,Math.min(3.5,gesture.v.scale*Math.hypot(dx,dy)/gesture.d));
+    view.x=gesture.v.x+(((a[0].x+a[1].x)/2)-gesture.mx)*.7;view.y=gesture.v.y+(((a[0].y+a[1].y)/2)-gesture.my)*.7;render();return
+  }
+  if(!drag)return;
+  if(drag.pan){view.x=drag.vx+(e.clientX-drag.x);view.y=drag.vy+(e.clientY-drag.y);render();return}
+  const o=objs.find(x=>x.id===drag.id);if(!o||o.locked)return;
+  const p=mapPoint(e);o.x=Math.max(0,Math.min(plotW-o.w,p.x-drag.dx));o.y=Math.max(0,Math.min(plotH-o.h,p.y-drag.dy));render()
+});
+function endPointer(e){pointers.delete(e.pointerId);drag=null;if(pointers.size<2)gesture=null}
+svg.addEventListener('pointerup',endPointer);svg.addEventListener('pointercancel',endPointer);
+
+syncPlotUI();syncHistory();loadPreset('A01',false);
+</script>
+</body>
+</html>
