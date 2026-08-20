@@ -1,9 +1,9 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#173f2a"><link rel="manifest" href="manifest.webmanifest"><title>Parcela Camping V12.2</title>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#173f2a"><link rel="manifest" href="manifest.webmanifest"><title>Parcela Camping V12.3</title>
 <style>
 :root{--bg:#e9eee9;--panel:#fff;--line:#d7ded7;--text:#1e2822;--muted:#6f786f;--green:#174d31;--blue:#2f76e7;--shadow:0 14px 38px rgba(20,35,25,.16)}*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);font-family:system-ui,-apple-system,sans-serif;color:var(--text)}button,input,select{font:inherit}button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px}.top{position:fixed;left:0;right:0;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);padding:max(10px,env(safe-area-inset-top)) 12px 10px;display:flex;align-items:center;gap:8px}.brand{font-weight:850;font-size:18px;margin-right:auto}.workspace{position:absolute;left:0;right:0;top:66px;bottom:68px;background:#dfe5df}#stage{width:100%;height:100%;display:block;touch-action:none}.bottom{position:fixed;left:0;right:0;bottom:0;z-index:50;background:#fff;border-top:1px solid var(--line);padding:7px 8px max(7px,env(safe-area-inset-bottom));display:flex;justify-content:space-around}.bottom button{border:0;background:transparent;padding:5px 7px;font-size:12px}.bi{display:block;font-size:20px}.fab{position:fixed;right:18px;bottom:88px;width:58px;height:58px;border-radius:50%;border:0;background:var(--green);color:#fff;font-size:30px;z-index:55;box-shadow:var(--shadow)}.context{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:56;background:#fff;border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow);padding:5px;display:none;gap:3px}.context.show{display:flex}.context button{border:0;font-size:12px}.back{position:fixed;inset:0;z-index:80;background:rgba(17,27,20,.24);opacity:0;pointer-events:none}.back.open{opacity:1;pointer-events:auto}.panel{position:fixed;z-index:90;background:#fff;box-shadow:var(--shadow);overflow:auto;transition:.22s;padding:12px 14px calc(16px + env(safe-area-inset-bottom));left:8px;right:8px;bottom:8px;max-height:72vh;border-radius:20px;transform:translateY(calc(100% + 30px))}.panel.open{transform:translateY(0)}.head{display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:-12px;background:#fff;padding:4px 0 8px;z-index:2}.head h2{margin:0;font-size:19px}.close{width:42px;height:42px;padding:0;font-size:20px}label{display:grid;gap:5px;font-size:12px;color:var(--muted);margin-bottom:8px}input,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.lib{display:grid;grid-template-columns:1fr 1fr;gap:8px}.lib button{text-align:left;min-height:52px}.primary{background:var(--green);color:#fff;border-color:var(--green)}.note{font-size:11px;color:var(--muted);padding:8px 10px;background:#f4f6f4;border-radius:10px}
 @media(orientation:landscape) and (max-height:650px){.panel{top:8px;bottom:8px;left:auto;right:8px;width:min(390px,42vw);max-height:none;transform:translateX(calc(100% + 30px))}.panel.open{transform:translateX(0)}}
 </style></head><body>
-<div class="top"><div class="brand">⛺ Parcela Camping · V12.2</div><button id="fitTop">⌗</button><button id="menuBtn">☰</button></div>
+<div class="top"><div class="brand">⛺ Parcela Camping · V12.3</div><button id="fitTop">⌗</button><button id="menuBtn">☰</button></div>
 <div class="workspace"><svg id="stage" viewBox="0 0 1200 900"></svg></div>
 <div class="navpad" aria-label="Navegación">
   <span></span><button id="panUp" aria-label="Arriba">▲</button><span></span>
@@ -12,7 +12,7 @@
 </div>
 <div id="ctx" class="context"><button id="rot">↻ Girar</button><button id="dup">⧉ Duplicar</button><button id="lock">🔒</button><button id="del">🗑</button><button id="measure">📐</button></div>
 <button id="fab" class="fab">+</button>
-<div class="bottom"><button id="parcelBtn"><span class="bi">🏕️</span>Parcela</button><button><span class="bi">✥</span>Diseño</button><button id="fitBtn"><span class="bi">⌗</span>Ajustar</button><button id="gridBtn"><span class="bi">▦</span>Rejilla</button><button id="clearBtn"><span class="bi">⌫</span>Limpiar</button></div>
+<div class="bottom"><button id="parcelBtn"><span class="bi">🏕️</span>Parcela</button><button id="elementsBtn"><span class="bi">✥</span>Elementos</button><button id="fitBtn"><span class="bi">⌗</span>Ajustar</button><button id="gridBtn"><span class="bi">▦</span>Rejilla</button><button id="clearBtn"><span class="bi">⌫</span>Limpiar</button></div>
 <div id="back" class="back"></div>
 
 <div id="settings" class="panel"><div class="head"><h2>Parcela y diseño</h2><button class="close" data-close>✕</button></div>
@@ -50,7 +50,7 @@ function render(){svg.innerHTML='';let world=E('g',{transform:`translate(${view.
   ...objs.filter(o=>!['floor','chair','table'].includes(o.type)),
   ...objs.filter(o=>o.type==='table')
 ].forEach(o=>drawObj(o,g));svg.appendChild=app;$('ctx').classList.toggle('show',!!cur())}
-function drawObj(o,g){let{s,ox,oy}=g,w=o.w*s,h=o.h*s,x=ox+o.x*s,y=oy+o.y*s,gr=E('g',{class:'obj','data-id':o.id,transform:`translate(${x} ${y}) rotate(${o.rot} ${w/2} ${h/2})`});if(o.type==='van'&&VAN){let im=E('image',{x:(w-h)/2,y:(h-w)/2,width:h,height:w,href:VAN,preserveAspectRatio:'xMidYMid meet',transform:`rotate(90 ${w/2} ${h/2})`});im.setAttribute('pointer-events','none');gr.appendChild(im)}else if(o.type==='tree'){gr.appendChild(E('circle',{cx:w/2,cy:h/2,r:Math.min(w,h)*.45,fill:'#477238'}))}else if(o.type==='hedge'){gr.appendChild(E('rect',{x:0,y:h*.15,width:w,height:h*.7,rx:h*.25,fill:'#315f31'}))}else if(o.type==='utility'){gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:4,fill:'#555'}));let t=E('text',{x:w/2,y:h*.65,'text-anchor':'middle','font-size':Math.max(12,h*.5)});t.textContent='⚡💧';gr.appendChild(t)}else{gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:Math.min(w,h)*.12,fill:o.type==='floor'?'#5d615c':'#8b9490',stroke:'#26312d','stroke-width':2}))}if(sel===o.id)gr.appendChild(E('rect',{x:-5,y:-5,width:w+10,height:h+10,rx:8,fill:'none',stroke:'#2f76e7','stroke-width':4,'stroke-dasharray':'10 6'}));svg.appendChild(gr)}
+function drawObj(o,g){let{s,ox,oy}=g,w=o.w*s,h=o.h*s,x=ox+o.x*s,y=oy+o.y*s,gr=E('g',{class:'obj','data-id':o.id,transform:`translate(${x} ${y}) rotate(${o.rot} ${w/2} ${h/2})`});gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:Math.min(w,h)*.08,class:'obj-hit'}));if(o.type==='van'&&VAN){let im=E('image',{x:(w-h)/2,y:(h-w)/2,width:h,height:w,href:VAN,preserveAspectRatio:'xMidYMid meet',transform:`rotate(90 ${w/2} ${h/2})`});im.setAttribute('pointer-events','none');gr.appendChild(im)}else if(o.type==='tree'){gr.appendChild(E('circle',{cx:w/2,cy:h/2,r:Math.min(w,h)*.45,fill:'#477238'}))}else if(o.type==='hedge'){gr.appendChild(E('rect',{x:0,y:h*.15,width:w,height:h*.7,rx:h*.25,fill:'#315f31'}))}else if(o.type==='utility'){gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:4,fill:'#555'}));let t=E('text',{x:w/2,y:h*.65,'text-anchor':'middle','font-size':Math.max(12,h*.5)});t.textContent='⚡💧';gr.appendChild(t)}else{gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:Math.min(w,h)*.12,fill:o.type==='floor'?'#5d615c':'#8b9490',stroke:'#26312d','stroke-width':2}))}if(sel===o.id)gr.appendChild(E('rect',{x:-5,y:-5,width:w+10,height:h+10,rx:8,fill:'none',stroke:'#2f76e7','stroke-width':4,'stroke-dasharray':'10 6'}));svg.appendChild(gr)}
 function fit(){view={x:0,y:0,scale:1};render()}function add(type){let[w,h]=D[type],o={id:idc++,type,x:Math.max(.2,(plotW-w)/2),y:Math.max(.2,(plotH-h)/2),w,h,rot:0,locked:false};objs.push(o);sel=o.id;closePanels();render()}function loadPlot(id,keepGear=false){
   let p=plots.find(x=>x.id===id)||plots[0];
   let gear=keepGear?objs.filter(o=>!o.fixed).map(o=>({...o})):[];
@@ -70,7 +70,12 @@ function fit(){view={x:0,y:0,scale:1};render()}function add(type){let[w,h]=D[typ
   $('pw').value=plotW;$('ph').value=plotH;$('ground').value=ground;$('road').value=roadSide;
   fit();
 }
-function openPanel(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('open'));$('back').classList.add('open');$(id).classList.add('open')}function closePanels(){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('open'));$('back').classList.remove('open')}document.querySelectorAll('[data-close]').forEach(b=>b.onclick=closePanels);$('back').onclick=closePanels;$('menuBtn').onclick=()=>openPanel('settings');$('fab').onclick=()=>openPanel('add');$('parcelBtn').onclick=()=>openPanel('parcels');document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>add(b.dataset.add));
+function openPanel(id){
+document.querySelectorAll('.panel').forEach(p=>p.classList.remove('open'));
+$('back').classList.add('open');$(id).classList.add('open');document.body.classList.add('panel-open')}
+function closePanels(){
+document.querySelectorAll('.panel').forEach(p=>p.classList.remove('open'));
+$('back').classList.remove('open');document.body.classList.remove('panel-open')}document.querySelectorAll('[data-close]').forEach(b=>b.onclick=closePanels);$('back').onclick=closePanels;$('menuBtn').onclick=()=>openPanel('settings');$('fab').onclick=()=>openPanel('add');$('parcelBtn').onclick=()=>openPanel('parcels');$('elementsBtn').onclick=()=>openPanel('add');document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>add(b.dataset.add));
 $('applyPlot').onclick=()=>{plotW=Math.max(3,+$('pw').value||plotW);plotH=Math.max(3,+$('ph').value||plotH);ground=$('ground').value;roadSide=$('road').value;fit();closePanels()};$('ground').onchange=()=>{ground=$('ground').value;render()};$('road').onchange=()=>{roadSide=$('road').value;render()};$('fitBtn').onclick=fit;$('fitTop').onclick=fit;$('gridBtn').onclick=()=>{grid=!grid;render()};$('clearBtn').onclick=()=>{objs=objs.filter(o=>o.fixed);sel=null;render()};
 $('rot').onclick=()=>{let o=cur();if(o&&!o.locked){o.rot=(o.rot+90)%360;render()}};$('dup').onclick=()=>{let o=cur();if(!o)return;let n={...o,id:idc++,x:o.x+.5,y:o.y+.5,locked:false,fixed:false};objs.push(n);sel=n.id;render()};$('lock').onclick=()=>{let o=cur();if(o){o.locked=!o.locked;render()}};$('del').onclick=()=>{let o=cur();if(!o||o.fixed)return;objs=objs.filter(x=>x.id!==sel);sel=null;render()};$('measure').onclick=()=>{let o=cur();if(!o||o.fixed)return;$('ow').value=o.w;$('oh').value=o.h;openPanel('props')};$('applyObj').onclick=()=>{let o=cur();if(!o||o.fixed)return;o.w=Math.max(.1,+$('ow').value||o.w);o.h=Math.max(.1,+$('oh').value||o.h);closePanels();render()};
 function mp(e){let p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;let q=p.matrixTransform(svg.getScreenCTM().inverse());q.x=(q.x-view.x)/view.scale;q.y=(q.y-view.y)/view.scale;let g=scene();return{x:(q.x-g.ox)/g.s,y:(q.y-g.oy)/g.s}}
@@ -187,7 +192,7 @@ $('plotSel').innerHTML=plots.map(p=>`<option value="${p.id}">${p.id} · ${p.w}×
 }
 </style>
 
-<div class="v12-watermark">Parcela Camping · V12.2</div>
+<div class="v12-watermark">Parcela Camping · V12.3</div>
 
 <style id="v121-controls-fix">
 /* Keep canvas edge-to-edge */
@@ -300,6 +305,18 @@ $('plotSel').innerHTML=plots.map(p=>`<option value="${p.id}">${p.id} · ${p.w}×
   font-size:18px;border-radius:10px
 }
 .navpad span{width:38px;height:38px}
+</style>
+
+
+<style id="v123-fixes">
+#fitBtn{display:none!important}
+.back{z-index:30000!important}
+.panel{z-index:30010!important}
+.navpad{z-index:200!important}
+.fab{z-index:190!important}
+.bottom{z-index:180!important}
+body.panel-open .navpad,body.panel-open .fab{pointer-events:none!important}
+.obj-hit{fill:rgba(0,0,0,.001);stroke:none;pointer-events:all}
 </style>
 
 </body></html>
