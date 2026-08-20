@@ -1,9 +1,9 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#173f2a"><link rel="manifest" href="manifest.webmanifest"><title>Parcela Camping V12.4</title>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#173f2a"><link rel="manifest" href="manifest.webmanifest"><title>Parcela Camping V13</title>
 <style>
 :root{--bg:#e9eee9;--panel:#fff;--line:#d7ded7;--text:#1e2822;--muted:#6f786f;--green:#174d31;--blue:#2f76e7;--shadow:0 14px 38px rgba(20,35,25,.16)}*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);font-family:system-ui,-apple-system,sans-serif;color:var(--text)}button,input,select{font:inherit}button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px}.top{position:fixed;left:0;right:0;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);padding:max(10px,env(safe-area-inset-top)) 12px 10px;display:flex;align-items:center;gap:8px}.brand{font-weight:850;font-size:18px;margin-right:auto}.workspace{position:absolute;left:0;right:0;top:66px;bottom:68px;background:#dfe5df}#stage{width:100%;height:100%;display:block;touch-action:none}.bottom{position:fixed;left:0;right:0;bottom:0;z-index:50;background:#fff;border-top:1px solid var(--line);padding:7px 8px max(7px,env(safe-area-inset-bottom));display:flex;justify-content:space-around}.bottom button{border:0;background:transparent;padding:5px 7px;font-size:12px}.bi{display:block;font-size:20px}.fab{position:fixed;right:18px;bottom:88px;width:58px;height:58px;border-radius:50%;border:0;background:var(--green);color:#fff;font-size:30px;z-index:55;box-shadow:var(--shadow)}.context{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:56;background:#fff;border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow);padding:5px;display:none;gap:3px}.context.show{display:flex}.context button{border:0;font-size:12px}.back{position:fixed;inset:0;z-index:80;background:rgba(17,27,20,.24);opacity:0;pointer-events:none}.back.open{opacity:1;pointer-events:auto}.panel{position:fixed;z-index:90;background:#fff;box-shadow:var(--shadow);overflow:auto;transition:.22s;padding:12px 14px calc(16px + env(safe-area-inset-bottom));left:8px;right:8px;bottom:8px;max-height:72vh;border-radius:20px;transform:translateY(calc(100% + 30px))}.panel.open{transform:translateY(0)}.head{display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:-12px;background:#fff;padding:4px 0 8px;z-index:2}.head h2{margin:0;font-size:19px}.close{width:42px;height:42px;padding:0;font-size:20px}label{display:grid;gap:5px;font-size:12px;color:var(--muted);margin-bottom:8px}input,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.lib{display:grid;grid-template-columns:1fr 1fr;gap:8px}.lib button{text-align:left;min-height:52px}.primary{background:var(--green);color:#fff;border-color:var(--green)}.note{font-size:11px;color:var(--muted);padding:8px 10px;background:#f4f6f4;border-radius:10px}
 @media(orientation:landscape) and (max-height:650px){.panel{top:8px;bottom:8px;left:auto;right:8px;width:min(390px,42vw);max-height:none;transform:translateX(calc(100% + 30px))}.panel.open{transform:translateX(0)}}
 </style></head><body>
-<div class="top"><div class="brand">⛺ Parcela Camping · V12.4</div><button id="fitTop">⌗</button><button id="menuBtn">☰</button></div>
+<div class="top"><div class="brand">⛺ Parcela Camping · V13</div><button id="fitTop">⌗</button><button id="menuBtn">☰</button></div>
 <div class="workspace"><svg id="stage" viewBox="0 0 1200 900"></svg></div>
 <div class="historyBtns">
   <button id="undoBtn" aria-label="Deshacer">↶</button>
@@ -56,8 +56,29 @@
 </div>
 <button id="loadPlot" class="primary" style="width:100%;margin-top:10px">Cargar parcela</button></div>
 
-<div id="add" class="panel"><div class="head"><h2>Añadir elemento</h2><button class="close" data-close>✕</button></div>
-<div class="lib"><button data-add="car">🚗 Coche</button><button data-add="van">🚐 VW T4</button><button data-add="bigvan">🚐 Furgoneta</button><button data-add="caravan">🏕️ Caravana</button><button data-add="motorhome">🚌 Autocaravana</button><button data-add="floor">▦ Tela suelo</button><button data-add="table">🪵 Mesa</button><button data-add="chair">🪑 Silla</button><button data-add="bike">🚲 Bici</button></div></div>
+<div id="add" class="panel elementPanel">
+  <div class="head"><h2>Biblioteca de elementos</h2><button class="close" data-close>✕</button></div>
+  <div class="libraryTools">
+    <div class="categoryTabs">
+      <button class="cat active" data-cat="all">Todos</button>
+      <button class="cat" data-cat="vehicle">Vehículos</button>
+      <button class="cat" data-cat="camp">Camping</button>
+      <button class="cat" data-cat="furniture">Mobiliario</button>
+    </div>
+    <label class="searchBox"><span>⌕</span><input id="elementSearch" type="search" placeholder="Buscar elemento…"></label>
+  </div>
+  <div class="lib visualLib">
+    <button data-add="car" data-cat="vehicle" data-name="coche"><span class="assetPreview carPreview"></span><span class="assetName">Coche</span></button>
+    <button data-add="van" data-cat="vehicle" data-name="vw t4 furgoneta"><span class="assetPreview vanPreview"></span><span class="assetName">VW T4</span></button>
+    <button data-add="bigvan" data-cat="vehicle" data-name="furgoneta grande"><span class="assetPreview bigvanPreview"></span><span class="assetName">Furgoneta</span></button>
+    <button data-add="caravan" data-cat="vehicle" data-name="caravana"><span class="assetPreview caravanPreview"></span><span class="assetName">Caravana</span></button>
+    <button data-add="motorhome" data-cat="vehicle" data-name="autocaravana"><span class="assetPreview motorhomePreview"></span><span class="assetName">Autocaravana</span></button>
+    <button data-add="floor" data-cat="camp" data-name="tela suelo alfombra"><span class="assetPreview floorPreview"></span><span class="assetName">Tela suelo</span></button>
+    <button data-add="table" data-cat="furniture" data-name="mesa"><span class="assetPreview tablePreview"></span><span class="assetName">Mesa</span></button>
+    <button data-add="chair" data-cat="furniture" data-name="silla"><span class="assetPreview chairPreview"></span><span class="assetName">Silla</span></button>
+    <button data-add="bike" data-cat="camp" data-name="bici bicicleta"><span class="assetPreview bikePreview"></span><span class="assetName">Bicicleta</span></button>
+  </div>
+</div>
 
 <div id="props" class="panel"><div class="head"><h2>📐 Medidas</h2><button class="close" data-close>✕</button></div><div class="row"><label>Ancho<input id="ow" type="number" step=".05"></label><label>Largo<input id="oh" type="number" step=".05"></label></div><button id="applyObj" class="primary" style="width:100%">Aplicar medidas</button></div>
 
@@ -106,13 +127,104 @@ const plots=Array.from({length:30},(_,i)=>({id:'A'+String(i+1).padStart(2,'0'),w
 function E(t,a={}){let n=document.createElementNS(NS,t);for(let[k,v]of Object.entries(a))n.setAttribute(k,v);return n}function cur(){return objs.find(o=>o.id===sel)}function seeded(s){return()=>((s=(s*1664525+1013904223)>>>0)/4294967296)}function fixed(type,x,y,w,h,r=0){return{id:idc++,type,x,y,w,h,rot:r,locked:true,fixed:true}}
 function infra(p){let r=seeded(p.seed),a=[];for(let i=0;i<2+p.seed%3;i++){let d=.9+r()*.7,x=.3+r()*(p.w-d-.6),y=.3+r()*(p.h-d-.6);a.push(fixed('tree',x,y,d,d))}let s=['top','right','bottom','left'].filter(x=>x!==p.road)[p.seed%3];if(s==='top')a.push(fixed('hedge',.1,.05,p.w-.2,.4));if(s==='bottom')a.push(fixed('hedge',.1,p.h-.45,p.w-.2,.4));if(s==='left')a.push(fixed('hedge',.05,.1,p.h-.2,.4,90));if(s==='right')a.push(fixed('hedge',p.w-.45,.1,p.h-.2,.4,90));a.push(fixed('utility',p.w*.5,.12,.35,.35));return a}
 function scene(){let W=1200,H=900,m=80,road=64,aw=W-m*2-(['left','right'].includes(roadSide)?road:0),ah=H-m*2-(['top','bottom'].includes(roadSide)?road:0),s=Math.min(aw/plotW,ah/plotH),ox=(W-plotW*s)/2,oy=(H-plotH*s)/2;if(roadSide==='top')oy+=32;if(roadSide==='bottom')oy-=32;if(roadSide==='left')ox+=32;if(roadSide==='right')ox-=32;return{W,H,s,ox,oy,road}}
-function render(){svg.innerHTML='';let world=E('g',{transform:`translate(${view.x} ${view.y}) scale(${view.scale})`});svg.appendChild(world);let app=svg.appendChild.bind(svg);svg.appendChild=n=>world.appendChild(n);let g=scene(),{W,H,s,ox,oy,road}=g;svg.appendChild(E('rect',{x:0,y:0,width:W,height:H,fill:'#dfe5df'}));svg.appendChild(E('rect',{x:ox,y:oy,width:plotW*s,height:plotH*s,rx:7,fill:ground==='grass'?'#7fa255':'#c9c1af',stroke:'#607064','stroke-width':2}));if(grid){for(let x=0;x<=plotW;x+=.5)svg.appendChild(E('line',{x1:ox+x*s,y1:oy,x2:ox+x*s,y2:oy+plotH*s,stroke:'#fff','stroke-width':.7,opacity:.25}));for(let y=0;y<=plotH;y+=.5)svg.appendChild(E('line',{x1:ox,y1:oy+y*s,x2:ox+plotW*s,y2:oy+y*s,stroke:'#fff','stroke-width':.7,opacity:.25}))}let rr;if(roadSide==='top')rr={x:ox,y:oy-road,width:plotW*s,height:road};if(roadSide==='bottom')rr={x:ox,y:oy+plotH*s,width:plotW*s,height:road};if(roadSide==='left')rr={x:ox-road,y:oy,width:road,height:plotH*s};if(roadSide==='right')rr={x:ox+plotW*s,y:oy,width:road,height:plotH*s};svg.appendChild(E('rect',{...rr,fill:'#c8b58d'}));[
-  ...objs.filter(o=>o.type==='floor'),
-  ...objs.filter(o=>o.type==='chair'),
-  ...objs.filter(o=>!['floor','chair','table'].includes(o.type)),
-  ...objs.filter(o=>o.type==='table')
-].forEach(o=>drawObj(o,g));svg.appendChild=app;$('ctx').classList.toggle('show',!!cur())}
-function drawObj(o,g){let{s,ox,oy}=g,w=o.w*s,h=o.h*s,x=ox+o.x*s,y=oy+o.y*s,gr=E('g',{class:'obj','data-id':o.id,transform:`translate(${x} ${y}) rotate(${o.rot} ${w/2} ${h/2})`});gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:Math.min(w,h)*.08,class:'obj-hit'}));if(o.type==='van'&&VAN){let im=E('image',{x:(w-h)/2,y:(h-w)/2,width:h,height:w,href:VAN,preserveAspectRatio:'xMidYMid meet',transform:`rotate(90 ${w/2} ${h/2})`});im.setAttribute('pointer-events','none');gr.appendChild(im)}else if(o.type==='tree'){gr.appendChild(E('circle',{cx:w/2,cy:h/2,r:Math.min(w,h)*.45,fill:'#477238'}))}else if(o.type==='hedge'){gr.appendChild(E('rect',{x:0,y:h*.15,width:w,height:h*.7,rx:h*.25,fill:'#315f31'}))}else if(o.type==='utility'){gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:4,fill:'#555'}));let t=E('text',{x:w/2,y:h*.65,'text-anchor':'middle','font-size':Math.max(12,h*.5)});t.textContent='⚡💧';gr.appendChild(t)}else{gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:Math.min(w,h)*.12,fill:o.type==='floor'?'#5d615c':'#8b9490',stroke:'#26312d','stroke-width':2}))}if(sel===o.id)gr.appendChild(E('rect',{x:-5,y:-5,width:w+10,height:h+10,rx:8,fill:'none',stroke:'#2f76e7','stroke-width':4,'stroke-dasharray':'10 6'}));svg.appendChild(gr)}
+function addDefs(){
+  let defs=E('defs');
+  let grass=E('pattern',{id:'grassPattern',width:44,height:44,patternUnits:'userSpaceOnUse'});
+  grass.appendChild(E('rect',{width:44,height:44,fill:'#58783e'}));
+  [[6,7,1.5,'#6f914f'],[19,13,1.2,'#496a34'],[34,8,1.1,'#7f9f58'],[11,31,1.3,'#46642f'],[30,29,1.5,'#6b8b49'],[40,39,1,'#3f5e2b']].forEach(a=>grass.appendChild(E('circle',{cx:a[0],cy:a[1],r:a[2],fill:a[3],opacity:.78})));
+  [[4,17,8,10],[22,37,27,29],[35,21,41,13],[15,2,19,-6]].forEach(a=>grass.appendChild(E('line',{x1:a[0],y1:a[1],x2:a[2],y2:a[3],stroke:'#789953','stroke-width':1,opacity:.55})));
+  defs.appendChild(grass);
+
+  let gravel=E('pattern',{id:'gravelPattern',width:42,height:42,patternUnits:'userSpaceOnUse'});
+  gravel.appendChild(E('rect',{width:42,height:42,fill:'#a9a397'}));
+  [[6,8,2.5,'#76736c'],[17,5,1.7,'#d0cbc0'],[31,11,2.2,'#858078'],[10,25,2,'#c6c0b4'],[27,30,3,'#77736d'],[38,35,1.5,'#d6d0c5'],[19,19,1.3,'#706c65']].forEach(a=>gravel.appendChild(E('ellipse',{cx:a[0],cy:a[1],rx:a[2],ry:a[2]*.7,fill:a[3],opacity:.85})));
+  defs.appendChild(gravel);
+
+  let road=E('linearGradient',{id:'roadGrad',x1:'0%',y1:'0%',x2:'100%',y2:'100%'});
+  road.appendChild(E('stop',{offset:'0%','stop-color':'#9a8664'}));road.appendChild(E('stop',{offset:'50%','stop-color':'#b09a72'}));road.appendChild(E('stop',{offset:'100%','stop-color':'#806f55'}));defs.appendChild(road);
+
+  let tree=E('radialGradient',{id:'treeGrad',cx:'38%',cy:'32%',r:'68%'});
+  tree.appendChild(E('stop',{offset:'0%','stop-color':'#85a957'}));tree.appendChild(E('stop',{offset:'48%','stop-color':'#4e7b37'}));tree.appendChild(E('stop',{offset:'100%','stop-color':'#26482a'}));defs.appendChild(tree);
+
+  let hedge=E('linearGradient',{id:'hedgeGrad',x1:'0%',y1:'0%',x2:'0%',y2:'100%'});
+  hedge.appendChild(E('stop',{offset:'0%','stop-color':'#65964b'}));hedge.appendChild(E('stop',{offset:'55%','stop-color':'#376c36'}));hedge.appendChild(E('stop',{offset:'100%','stop-color':'#1d4728'}));defs.appendChild(hedge);
+
+  svg.appendChild(defs);
+}
+
+function render(){
+  svg.innerHTML='';addDefs();
+  let world=E('g',{transform:`translate(${view.x} ${view.y}) scale(${view.scale})`});svg.appendChild(world);
+  let app=svg.appendChild.bind(svg);svg.appendChild=n=>world.appendChild(n);
+  let g=scene(),{W,H,s,ox,oy,road}=g;
+  svg.appendChild(E('rect',{x:0,y:0,width:W,height:H,fill:'#09131d'}));
+  svg.appendChild(E('rect',{x:ox+8,y:oy+10,width:plotW*s,height:plotH*s,rx:8,fill:'#000',opacity:.35}));
+  svg.appendChild(E('rect',{x:ox,y:oy,width:plotW*s,height:plotH*s,rx:7,fill:ground==='grass'?'url(#grassPattern)':'url(#gravelPattern)',stroke:'#8aa0b0','stroke-width':1.5}));
+  if(grid){
+    for(let x=0;x<=plotW;x+=.5)svg.appendChild(E('line',{x1:ox+x*s,y1:oy,x2:ox+x*s,y2:oy+plotH*s,stroke:'#d6e8f5','stroke-width':.55,opacity:.14}));
+    for(let y=0;y<=plotH;y+=.5)svg.appendChild(E('line',{x1:ox,y1:oy+y*s,x2:ox+plotW*s,y2:oy+y*s,stroke:'#d6e8f5','stroke-width':.55,opacity:.14}));
+  }
+  let rr;if(roadSide==='top')rr={x:ox,y:oy-road,width:plotW*s,height:road};if(roadSide==='bottom')rr={x:ox,y:oy+plotH*s,width:plotW*s,height:road};if(roadSide==='left')rr={x:ox-road,y:oy,width:road,height:plotH*s};if(roadSide==='right')rr={x:ox+plotW*s,y:oy,width:road,height:plotH*s};
+  svg.appendChild(E('rect',{...rr,fill:'url(#roadGrad)',opacity:.92}));
+  [
+    ...objs.filter(o=>o.type==='floor'),
+    ...objs.filter(o=>o.type==='chair'),
+    ...objs.filter(o=>!['floor','chair','table'].includes(o.type)),
+    ...objs.filter(o=>o.type==='table')
+  ].forEach(o=>drawObj(o,g));
+  svg.appendChild=app;$('ctx').classList.toggle('show',!!cur())
+}
+function drawObj(o,g){
+  let{s,ox,oy}=g,w=o.w*s,h=o.h*s,x=ox+o.x*s,y=oy+o.y*s;
+  let gr=E('g',{class:'obj','data-id':o.id,transform:`translate(${x} ${y}) rotate(${o.rot} ${w/2} ${h/2})`});
+  gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:Math.min(w,h)*.08,class:'obj-hit'}));
+
+  if(o.type==='van'&&VAN){
+    let im=E('image',{x:(w-h)/2,y:(h-w)/2,width:h,height:w,href:VAN,preserveAspectRatio:'xMidYMid meet',transform:`rotate(90 ${w/2} ${h/2})`});
+    im.setAttribute('pointer-events','none');gr.appendChild(im);
+  }else if(o.type==='tree'){
+    gr.appendChild(E('ellipse',{cx:w*.54,cy:h*.58,rx:w*.38,ry:h*.35,fill:'#000',opacity:.28}));
+    [[.42,.40,.34],[.64,.44,.31],[.49,.64,.34],[.30,.59,.27],[.69,.66,.24]].forEach((a,i)=>gr.appendChild(E('circle',{cx:w*a[0],cy:h*a[1],r:Math.min(w,h)*a[2],fill:'url(#treeGrad)',opacity:.92-i*.04})));
+    gr.appendChild(E('circle',{cx:w*.5,cy:h*.52,r:Math.min(w,h)*.07,fill:'#4e3424',opacity:.8}));
+  }else if(o.type==='hedge'){
+    gr.appendChild(E('rect',{x:3,y:h*.27+5,width:w-6,height:h*.48,rx:h*.22,fill:'#000',opacity:.28}));
+    gr.appendChild(E('rect',{x:0,y:h*.18,width:w,height:h*.64,rx:h*.28,fill:'url(#hedgeGrad)',stroke:'#244b2c','stroke-width':1.5}));
+    for(let i=8;i<w-5;i+=Math.max(8,h*.22))gr.appendChild(E('circle',{cx:i,cy:h*.46,r:h*.18,fill:i%3?'#497c3e':'#5a8b48',opacity:.72}));
+  }else if(o.type==='utility'){
+    gr.appendChild(E('rect',{x:w*.1+3,y:h*.1+4,width:w*.8,height:h*.8,rx:5,fill:'#000',opacity:.35}));
+    gr.appendChild(E('rect',{x:w*.1,y:h*.1,width:w*.8,height:h*.8,rx:5,fill:'#293746',stroke:'#6d8191','stroke-width':1.5}));
+    let t=E('text',{x:w/2,y:h*.64,'text-anchor':'middle','font-size':Math.max(12,h*.48)});t.textContent='⚡💧';gr.appendChild(t);
+  }else if(o.type==='floor'){
+    gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:3,fill:'#242c2d',stroke:'#687476','stroke-width':1.5,opacity:.92}));
+    for(let i=6;i<w;i+=10)gr.appendChild(E('line',{x1:i,y1:0,x2:i,y2:h,stroke:'#414a4c','stroke-width':1,opacity:.55}));
+  }else if(o.type==='table'){
+    gr.appendChild(E('rect',{x:4,y:5,width:w-4,height:h-3,rx:6,fill:'#000',opacity:.26}));
+    gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:6,fill:'#a46a35',stroke:'#6b4123','stroke-width':2}));
+    for(let i=8;i<w;i+=12)gr.appendChild(E('line',{x1:i,y1:3,x2:i,y2:h-3,stroke:'#d59251','stroke-width':1.4,opacity:.6}));
+    gr.appendChild(E('line',{x1:w*.5,y1:3,x2:w*.5,y2:h-3,stroke:'#654020','stroke-width':2,opacity:.65}));
+  }else if(o.type==='chair'){
+    gr.appendChild(E('rect',{x:w*.13+3,y:h*.08+5,width:w*.74,height:h*.84,rx:8,fill:'#000',opacity:.25}));
+    gr.appendChild(E('rect',{x:w*.13,y:h*.08,width:w*.74,height:h*.84,rx:8,fill:'#23667e',stroke:'#97a7ad','stroke-width':2}));
+    gr.appendChild(E('rect',{x:w*.22,y:h*.18,width:w*.56,height:h*.53,rx:5,fill:'#174f66',opacity:.85}));
+  }else if(o.type==='bike'){
+    let r=Math.min(w,h)*.33,cy=h*.52;
+    gr.appendChild(E('circle',{cx:w*.19,cy,r,fill:'none',stroke:'#a7b5bf','stroke-width':3}));
+    gr.appendChild(E('circle',{cx:w*.81,cy,r,fill:'none',stroke:'#a7b5bf','stroke-width':3}));
+    gr.appendChild(E('path',{d:`M ${w*.19} ${cy} L ${w*.46} ${h*.32} L ${w*.60} ${cy} L ${w*.34} ${cy} Z M ${w*.46} ${h*.32} L ${w*.70} ${h*.26}`,fill:'none',stroke:'#d37438','stroke-width':3}));
+  }else{
+    let base=o.type==='car'?'#3c4650':o.type==='bigvan'?'#899397':o.type==='caravan'?'#e4e7e4':'#deded5';
+    gr.appendChild(E('rect',{x:3,y:5,width:w-3,height:h-3,rx:Math.min(w,h)*.13,fill:'#000',opacity:.30}));
+    gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:Math.min(w,h)*.13,fill:base,stroke:'#1f2b34','stroke-width':2}));
+    gr.appendChild(E('rect',{x:w*.18,y:h*.08,width:w*.64,height:h*.18,rx:4,fill:'#60808f'}));
+    gr.appendChild(E('rect',{x:w*.22,y:h*.34,width:w*.56,height:h*.36,rx:5,fill:o.type==='car'?'#283640':'#c3c8c7',opacity:.9}));
+  }
+
+  if(sel===o.id){
+    gr.appendChild(E('rect',{x:-6,y:-6,width:w+12,height:h+12,rx:9,fill:'none',stroke:'#0a84ff','stroke-width':4,'stroke-dasharray':'10 6'}));
+    gr.appendChild(E('circle',{cx:w,cy:0,r:6,fill:'#0a84ff',stroke:'#dff1ff','stroke-width':2}));
+  }
+  svg.appendChild(gr)
+}
 function fit(){view={x:0,y:0,scale:1};render()}function add(type){pushUndo();let[w,h]=D[type],o={id:idc++,type,x:Math.max(.2,(plotW-w)/2),y:Math.max(.2,(plotH-h)/2),w,h,rot:0,locked:false};objs.push(o);sel=o.id;closePanels();render()}function loadPlot(id,keepGear=false){
   let p=plots.find(x=>x.id===id)||plots[0];
   let gear=keepGear?objs.filter(o=>!o.fixed).map(o=>({...o})):[];
@@ -138,6 +250,21 @@ $('back').classList.add('open');$(id).classList.add('open');document.body.classL
 function closePanels(){
 document.querySelectorAll('.panel').forEach(p=>p.classList.remove('open'));
 $('back').classList.remove('open');document.body.classList.remove('panel-open')}document.querySelectorAll('[data-close]').forEach(b=>b.onclick=closePanels);$('back').onclick=closePanels;$('menuBtn').onclick=()=>openPanel('settings');$('parcelBtn').onclick=()=>openPanel('parcels');$('elementsBtn').onclick=()=>openPanel('add');document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>add(b.dataset.add));
+const libButtons=[...document.querySelectorAll('.visualLib [data-add]')];
+let activeCategory='all';
+function filterLibrary(){
+  const q=($('elementSearch')?.value||'').trim().toLowerCase();
+  libButtons.forEach(b=>{
+    const cat=b.dataset.cat||'all',name=b.dataset.name||'';
+    b.style.display=((activeCategory==='all'||cat===activeCategory)&&(!q||name.includes(q)))?'grid':'none';
+  });
+}
+document.querySelectorAll('.categoryTabs .cat').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.categoryTabs .cat').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');activeCategory=b.dataset.cat;filterLibrary();
+});
+$('elementSearch')?.addEventListener('input',filterLibrary);
+
 $('applyPlot').onclick=()=>{pushUndo();plotW=Math.max(3,+$('pw').value||plotW);plotH=Math.max(3,+$('ph').value||plotH);ground=$('ground').value;roadSide=$('road').value;fit();closePanels()};$('ground').onchange=()=>{pushUndo();ground=$('ground').value;render()};$('road').onchange=()=>{pushUndo();roadSide=$('road').value;render()};$('fitBtn').onclick=fit;$('fitTop').onclick=fit;$('gridBtn').onclick=()=>{pushUndo();grid=!grid;render()};$('clearBtn').onclick=()=>{if(!confirm('¿Seguro que quieres eliminar todos tus elementos de la parcela?'))return;pushUndo();objs=objs.filter(o=>o.fixed);sel=null;render()};
 $('rot').onclick=()=>{let o=cur();if(o&&!o.locked){pushUndo();o.rot=(o.rot+90)%360;render()}};$('dup').onclick=()=>{let o=cur();if(!o)return;pushUndo();let n={...o,id:idc++,x:o.x+.5,y:o.y+.5,locked:false,fixed:false};objs.push(n);sel=n.id;render()};$('lock').onclick=()=>{let o=cur();if(o){pushUndo();o.locked=!o.locked;render()}};$('del').onclick=()=>{let o=cur();if(!o||o.fixed)return;if(!confirm('¿Seguro que quieres eliminar este elemento?'))return;pushUndo();objs=objs.filter(x=>x.id!==sel);sel=null;render()};$('measure').onclick=()=>{let o=cur();if(!o||o.fixed)return;$('ow').value=o.w;$('oh').value=o.h;openPanel('props')};$('applyObj').onclick=()=>{let o=cur();if(!o||o.fixed)return;pushUndo();o.w=Math.max(.1,+$('ow').value||o.w);o.h=Math.max(.1,+$('oh').value||o.h);closePanels();render()};
 function mp(e){let p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;let q=p.matrixTransform(svg.getScreenCTM().inverse());q.x=(q.x-view.x)/view.scale;q.y=(q.y-view.y)/view.scale;let g=scene();return{x:(q.x-g.ox)/g.s,y:(q.y-g.oy)/g.s}}
@@ -291,7 +418,7 @@ $('redoBtn').onclick=redoAction;
 }
 </style>
 
-<div class="v12-watermark">Parcela Camping · V12.4</div>
+<div class="v12-watermark">Parcela Camping · V13</div>
 
 <style id="v121-controls-fix">
 /* Keep canvas edge-to-edge */
@@ -444,8 +571,104 @@ body.panel-open .navpad,body.panel-open .fab{pointer-events:none!important}
 @media (orientation:portrait){
   .historyBtns{left:10px;top:10px}
 }
-/* fab is removed in V12.4 */
+/* fab is removed in V13 */
 .fab{display:none!important}
+</style>
+
+
+<style id="v13-dark-ui">
+:root{
+  --bg:#081019;
+  --panel:#0f1a25;
+  --panel2:#142231;
+  --line:#26384a;
+  --text:#eef6ff;
+  --muted:#91a4b6;
+  --green:#0a84ff;
+  --blue:#0a84ff;
+  --danger:#ff5a66;
+  --shadow:0 18px 60px rgba(0,0,0,.45);
+}
+html,body{background:#081019!important;color:var(--text)!important}
+.workspace{background:#0a131c!important}
+.panel{
+  background:linear-gradient(180deg,rgba(17,29,41,.98),rgba(8,17,26,.98))!important;
+  border:1px solid rgba(91,124,154,.25)!important;
+  box-shadow:0 24px 80px rgba(0,0,0,.58)!important;
+  color:var(--text)!important;
+}
+.head{background:rgba(15,26,37,.96)!important;border-bottom:1px solid rgba(100,132,159,.15)}
+.head h2{color:#f5f9ff!important}
+button,input,select{
+  background:#132130!important;color:#eaf4ff!important;
+  border-color:#2a4054!important
+}
+button:hover{background:#182c3f!important}
+.primary{background:#0a84ff!important;border-color:#0a84ff!important;color:#fff!important}
+label,.note{color:#9cafc0!important}
+.note{background:#101d2a!important}
+.back{background:rgba(0,5,10,.63)!important;backdrop-filter:blur(8px)}
+.bottom,.navpad,.historyBtns button,.context{
+  background:rgba(10,20,30,.90)!important;
+  border-color:rgba(74,107,135,.30)!important;
+  box-shadow:0 12px 40px rgba(0,0,0,.45)!important;
+  backdrop-filter:blur(18px)
+}
+.bottom button,.navpad button,.context button,.historyBtns button{color:#b8c9d8!important}
+.bottom button:hover,.navpad button:hover,.context button:hover{background:#14283a!important}
+.bottom .bi{color:#0a84ff}
+.v12-watermark{color:rgba(194,211,225,.30)!important}
+.obj-hit{fill:rgba(0,0,0,.001)!important}
+
+/* visual library */
+.elementPanel{width:min(760px,92vw)!important}
+.libraryTools{display:grid;gap:10px;margin:8px 0 14px}
+.categoryTabs{display:flex;gap:7px;overflow:auto;padding-bottom:2px}
+.categoryTabs .cat{white-space:nowrap;padding:8px 14px;border-radius:10px}
+.categoryTabs .cat.active{background:#0a84ff!important;border-color:#0a84ff!important;color:#fff!important}
+.searchBox{
+  display:flex!important;grid-template-columns:22px 1fr!important;align-items:center!important;
+  gap:7px!important;margin:0!important;padding:0 10px!important;
+  background:#0b1722;border:1px solid #25394c;border-radius:12px
+}
+.searchBox span{font-size:22px;color:#7890a6}
+.searchBox input{border:0!important;background:transparent!important;padding:11px 2px!important;outline:0}
+.visualLib{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important}
+.visualLib button{
+  min-height:132px!important;padding:8px!important;border-radius:14px!important;
+  display:grid!important;grid-template-rows:92px auto!important;gap:5px!important;
+  text-align:center!important;background:linear-gradient(180deg,#172636,#101b27)!important;
+  border:1px solid #2a4054!important;overflow:hidden!important
+}
+.visualLib button:active{transform:scale(.98)}
+.assetPreview{
+  display:block;width:100%;height:92px;border-radius:10px;position:relative;overflow:hidden;
+  background:radial-gradient(circle at 50% 40%,#314458,#172532 70%)
+}
+.assetName{font-size:12px;font-weight:700;color:#dcecff}
+
+/* card illustrations */
+.assetPreview:before,.assetPreview:after{content:"";position:absolute}
+.carPreview:before{left:34%;top:8%;width:32%;height:84%;border-radius:26% 26% 18% 18%;background:linear-gradient(90deg,#222b33,#59646c 42%,#242c32);box-shadow:0 7px 16px #0008}
+.carPreview:after{left:39%;top:20%;width:22%;height:23%;border-radius:7px;background:#5f8797;box-shadow:0 32px 0 #425a63}
+.bigvanPreview:before{left:33%;top:6%;width:34%;height:88%;border-radius:11px;background:linear-gradient(90deg,#818b90,#c0c6c8 45%,#6b7479);box-shadow:0 8px 17px #0008}
+.bigvanPreview:after{left:38%;top:13%;width:24%;height:16%;border-radius:4px;background:#678596}
+.caravanPreview:before{left:29%;top:5%;width:42%;height:88%;border-radius:13px;background:linear-gradient(90deg,#d9dfe0,#fff 45%,#b7c0c2);box-shadow:0 8px 18px #0009}
+.caravanPreview:after{left:36%;top:18%;width:28%;height:14%;background:#7195a8;border-radius:4px;box-shadow:0 30px 0 #6c8e9e}
+.motorhomePreview:before{left:28%;top:4%;width:44%;height:90%;border-radius:14px;background:linear-gradient(90deg,#d5d9d5,#f4efe3 48%,#b8bcb8);box-shadow:0 8px 18px #0009}
+.motorhomePreview:after{left:34%;top:12%;width:32%;height:18%;border-radius:5px;background:#7695a0;box-shadow:0 31px 0 #839ba3}
+.floorPreview{background:repeating-linear-gradient(45deg,#313a3b,#313a3b 5px,#272e30 5px,#272e30 10px)}
+.floorPreview:after{inset:14px;border:1px solid #6f7c7f;border-radius:5px}
+.tablePreview:before{left:17%;right:17%;top:22%;bottom:22%;border-radius:8px;background:repeating-linear-gradient(90deg,#a86d39 0 9px,#bc7b42 9px 18px);box-shadow:0 8px 16px #0008}
+.tablePreview:after{left:22%;right:22%;top:50%;height:2px;background:#6e4325}
+.chairPreview:before{left:26%;right:26%;top:14%;bottom:14%;border:5px solid #66747b;border-radius:12px;background:#1f718c;transform:perspective(90px) rotateX(12deg);box-shadow:0 8px 16px #0008}
+.bikePreview:before{left:12%;top:31%;width:29px;height:29px;border:4px solid #aab7c0;border-radius:50%;box-shadow:64px 0 0 -4px transparent,64px 0 0 0 #aab7c0}
+.bikePreview:after{left:34%;top:39%;width:50px;height:32px;border-left:4px solid #dc7b39;border-bottom:4px solid #dc7b39;transform:skew(-20deg) rotate(-8deg)}
+.vanPreview{background:#172532 center/contain no-repeat}
+.vanPreview:before{left:34%;top:4%;width:32%;height:92%;border-radius:10px;background:linear-gradient(90deg,#101a21,#203c4c 45%,#0a1218);box-shadow:0 8px 18px #0009}
+.vanPreview:after{left:39%;top:11%;width:22%;height:18%;border-radius:4px;background:#456d7c;box-shadow:0 46px 0 #273f49}
+
+@media(max-width:620px){.visualLib{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 </style>
 
 </body></html>
