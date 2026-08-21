@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Parcela Camping">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Parcela Camping V15</title>
+<title>Parcela Camping V15.1</title>
 <style>
 :root{
   --bg:#071018;--panel:#0d1822;--panel2:#132230;--line:#263a4b;
@@ -110,7 +110,7 @@ input,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--l
   <header class="v15Header">
     <div class="brand">
       <img src="app-logo.png" alt="">
-      <div><strong>Parcela Camping</strong><span>V15</span></div>
+      <div><strong>Parcela Camping</strong><span>V15.1</span></div>
     </div>
     <div class="headerTools">
       <button id="northHeaderBtn">🧭 Norte <span id="northLabel">0°</span></button>
@@ -127,6 +127,7 @@ input,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--l
     <label>Terreno<select id="v15Ground"><option value="grass">Hierba</option><option value="gravel">Grava</option></select></label>
     <label>Pasillo<select id="v15Road"><option value="top">Arriba</option><option value="right">Derecha</option><option value="bottom">Abajo</option><option value="left">Izquierda</option></select></label>
     <label>Norte<select id="v15North"><option value="0">0°</option><option value="45">45°</option><option value="90">90°</option><option value="135">135°</option><option value="180">180°</option><option value="225">225°</option><option value="270">270°</option><option value="315">315°</option></select></label>
+    <label>Hora solar<input id="v15SunTime" type="range" min="7" max="21" step=".25" value="12"><span id="v15SunTimeLabel">12:00</span></label>
     <button id="v15Apply" class="primary">Aplicar</button>
     <div class="propsHint">La V15 mantiene el motor de V14.4 y reorganiza la interfaz.</div>
   </aside>
@@ -135,6 +136,11 @@ input,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--l
   <div class="history">
     <button id="undoBtn" aria-label="Deshacer">↶</button>
     <button id="redoBtn" aria-label="Rehacer">↷</button>
+  </div>
+  <div class="v151TopTools">
+    <button id="northCompactBtn">🧭 Norte <span id="northCompactLabel">0°</span></button>
+    <button id="sunCompactBtn">☀️ Sol <span id="sunCompactLabel">12:00</span></button>
+    <button id="parcelCompactBtn">📐 Parcela</button>
   </div>
 
   <div class="leftbar">
@@ -158,7 +164,7 @@ input,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--l
     <button id="deleteBtn" class="danger">🗑</button>
   </div>
 
-  <div class="watermark">Parcela Camping · V15</div>
+  <div class="watermark">Parcela Camping · V15.1</div>
 
   <div id="backdrop" class="backdrop"></div>
 
@@ -256,7 +262,7 @@ const PLOTS=Array.from({length:30},(_,i)=>({
   north:((i*45)%360)
 }));
 
-let plotW=9,plotH=10,ground='grass',roadSide='top',grid=true,northDeg=0;
+let plotW=9,plotH=10,ground='grass',roadSide='top',grid=true,northDeg=0,sunTime=12;
 let objs=[],sel=null,idc=1,view={x:0,y:0,scale:1};
 let drag=null,pointers=new Map(),gesture=null;
 let undoStack=[],redoStack=[];
@@ -265,7 +271,7 @@ let activeCat='all';
 function E(tag,a={}){const n=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(a))n.setAttribute(k,v);return n}
 function cur(){return objs.find(o=>o.id===sel)}
 function seeded(s){return()=>((s=(s*1664525+1013904223)>>>0)/4294967296)}
-function snapshot(){return JSON.stringify({plotW,plotH,ground,roadSide,grid,northDeg,objs,idc})}
+function snapshot(){return JSON.stringify({plotW,plotH,ground,roadSide,grid,northDeg,sunTime,objs,idc})}
 function restore(s){const d=JSON.parse(s);plotW=d.plotW;plotH=d.plotH;ground=d.ground;roadSide=d.roadSide;grid=d.grid;objs=d.objs||[];idc=d.idc||1;sel=null;fit()}
 function pushUndo(){undoStack.push(snapshot());if(undoStack.length>50)undoStack.shift();redoStack=[];syncHistory()}
 function syncHistory(){$('undoBtn').disabled=!undoStack.length;$('redoBtn').disabled=!redoStack.length}
@@ -362,6 +368,12 @@ function render(){
   ng.appendChild(E('path',{d:'M 0 -18 L 7 8 L 0 4 L -7 8 Z',fill:'#e7f4ff'}));
   const nt=E('text',{x:0,y:36,'text-anchor':'middle','font-size':14,fill:'#e7f4ff'});nt.textContent='N';ng.appendChild(nt);
   svg.appendChild(ng);
+  const sunG=E('g',{transform:`translate(${ox+plotW*s/2} ${oy+plotH*s/2}) rotate(${northDeg})`});
+  const arcR=Math.min(plotW*s,plotH*s)*0.38;
+  sunG.appendChild(E('path',{d:`M ${-arcR} ${arcR*.62} C ${-arcR*.30} ${-arcR*.70}, ${arcR*.30} ${-arcR*.70}, ${arcR} ${arcR*.62}`,fill:'none',stroke:'#f3b41b','stroke-width':3,'stroke-dasharray':'8 6',opacity:.62}));
+  const u=Math.max(0,Math.min(1,(sunTime-7)/14)),sx=-arcR+2*arcR*u,sy=arcR*.62-1.32*arcR*Math.sin(Math.PI*u);
+  sunG.appendChild(E('circle',{cx:sx,cy:sy,r:14,fill:'#ffc43d',stroke:'#fff2a8','stroke-width':2}));
+  svg.appendChild(sunG);
   [
     ...objs.filter(o=>o.type==='floor'),
     ...objs.filter(o=>o.type==='chair'),
@@ -474,29 +486,18 @@ function endPointer(e){pointers.delete(e.pointerId);drag=null;if(pointers.size<2
 svg.addEventListener('pointerup',endPointer);svg.addEventListener('pointercancel',endPointer);
 
 
+function fmtSun(t){const hh=Math.floor(t),mm=Math.round((t-hh)*60);return String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0')}
 function syncV15Props(){
-  if(!$('v15PlotW')) return;
-  $('v15PlotW').value=plotW;
-  $('v15PlotH').value=plotH;
-  $('v15Ground').value=ground;
-  $('v15Road').value=roadSide;
-  $('v15North').value=String(northDeg);
-  $('northLabel').textContent=northDeg+'°';
+  if(!$('v15PlotW'))return;
+  $('v15PlotW').value=plotW;$('v15PlotH').value=plotH;$('v15Ground').value=ground;$('v15Road').value=roadSide;$('v15North').value=String(northDeg);
+  $('v15SunTime').value=String(sunTime);$('v15SunTimeLabel').textContent=fmtSun(sunTime);$('northCompactLabel').textContent=northDeg+'°';$('sunCompactLabel').textContent=fmtSun(sunTime)
 }
-$('parcelHeaderBtn')?.addEventListener('click',()=>{$('v15Props').classList.toggle('open');syncV15Props()});
-$('northHeaderBtn')?.addEventListener('click',()=>{$('v15Props').classList.add('open');syncV15Props();$('v15North').focus()});
-$('sunHeaderBtn')?.addEventListener('click',()=>alert('Sol: en esta V15 se recupera primero la orientación norte. El arco solar se reintroducirá sobre esta base sin tocar el motor.'));
-$('v15Apply')?.addEventListener('click',()=>{
-  pushUndo();
-  plotW=Math.max(3,+$('v15PlotW').value||plotW);
-  plotH=Math.max(3,+$('v15PlotH').value||plotH);
-  ground=$('v15Ground').value;
-  roadSide=$('v15Road').value;
-  northDeg=+$('v15North').value||0;
-  syncV15Props();
-  fit();
-});
-
+$('parcelCompactBtn').onclick=()=>{$('v15Props').classList.toggle('open');syncV15Props()};
+$('northCompactBtn').onclick=()=>{$('v15Props').classList.add('open');syncV15Props()};
+$('sunCompactBtn').onclick=()=>{$('v15Props').classList.add('open');syncV15Props()};
+$('v15SunTime').oninput=e=>{sunTime=+e.target.value;$('v15SunTimeLabel').textContent=fmtSun(sunTime);$('sunCompactLabel').textContent=fmtSun(sunTime);render()};
+$('v15North').onchange=e=>{northDeg=+e.target.value||0;$('northCompactLabel').textContent=northDeg+'°';render()};
+$('v15Apply').onclick=()=>{pushUndo();plotW=Math.max(3,+$('v15PlotW').value||plotW);plotH=Math.max(3,+$('v15PlotH').value||plotH);ground=$('v15Ground').value;roadSide=$('v15Road').value;northDeg=+$('v15North').value||0;sunTime=+$('v15SunTime').value||12;syncV15Props();fit()};
 syncPlotUI();syncHistory();loadPreset('A01',false);
 syncV15Props();
 </script>
@@ -541,5 +542,13 @@ body{background:radial-gradient(circle at 50% 20%,#0a1a28,#06101a 58%)!important
 }
 </style>
 
-</body>
+<style id="v151fix">
+.v15Header{display:none!important}#stageWrap{top:0!important}
+.history{display:flex!important;position:fixed!important;left:max(10px,env(safe-area-inset-left))!important;top:max(10px,env(safe-area-inset-top))!important;z-index:230!important}
+.v151TopTools{position:fixed;left:calc(max(10px,env(safe-area-inset-left)) + 96px);top:max(10px,env(safe-area-inset-top));display:flex;gap:6px;z-index:230}
+.v151TopTools button{height:42px;padding:0 12px;border-radius:12px;background:rgba(8,21,32,.96);border:1px solid #173a55;color:#d9efff}
+.v15Props{top:62px!important}
+@media (orientation:portrait){.v151TopTools{left:10px!important;top:62px!important;flex-wrap:wrap}.v15Props{top:auto!important}}
+</style></body>
 </html>
+syncV15Props();
