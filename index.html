@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Parcela Camping">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Parcela Camping V14.2</title>
+<title>Parcela Camping V14.3</title>
 <style>
 :root{
   --bg:#071018;--panel:#0d1822;--panel2:#132230;--line:#263a4b;
@@ -135,7 +135,7 @@ input,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--l
     <button id="deleteBtn" class="danger">🗑</button>
   </div>
 
-  <div class="watermark">Parcela Camping · V14.2</div>
+  <div class="watermark">Parcela Camping · V14.3</div>
 
   <div id="backdrop" class="backdrop"></div>
 
@@ -201,11 +201,11 @@ if ('serviceWorker' in navigator) {
 const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg',svg=$('stage');
 
 const TYPES={
-  car:{name:'Coche',cat:'vehicle',w:1.8,h:4.5,emoji:'🚗'},
+  car:{name:'Coche',cat:'vehicle',w:1.8,h:4.5,img:'car.png'},
   van:{name:'VW T4',cat:'vehicle',w:1.84,h:4.78,img:'van_t4.png'},
-  bigvan:{name:'Furgoneta',cat:'vehicle',w:2.05,h:6,emoji:'🚐'},
-  caravan:{name:'Caravana',cat:'vehicle',w:2.3,h:6.5,emoji:'🏕️'},
-  motorhome:{name:'Autocaravana',cat:'vehicle',w:2.35,h:7,emoji:'🚌'},
+  bigvan:{name:'Furgoneta',cat:'vehicle',w:2.05,h:6,img:'bigvan.png'},
+  caravan:{name:'Caravana',cat:'vehicle',w:2.3,h:6.5,img:'caravan.png'},
+  motorhome:{name:'Autocaravana',cat:'vehicle',w:2.35,h:7,img:'motorhome.png'},
   tent_green:{name:'Tienda compacta',cat:'tent',w:2.4,h:2.4,img:'tent_green.png'},
   tent_family:{name:'Tienda familiar',cat:'tent',w:4.6,h:3.5,img:'tent_family.png'},
   tent_gazebo:{name:'Pabellón / base',cat:'tent',w:3,h:3,img:'tent_gazebo.png'},
