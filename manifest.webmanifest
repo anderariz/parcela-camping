@@ -1,10 +1,10 @@
 {
-  "name": "Parcela Camping V14.3",
-  "short_name": "Camping V14.3",
-  "start_url": "./index.html?v=14.3",
+  "name": "Parcela Camping V15",
+  "short_name": "Camping V15",
+  "start_url": "./index.html?v=15",
   "display": "standalone",
-  "background_color": "#071018",
-  "theme_color": "#08111b",
+  "background_color": "#06101a",
+  "theme_color": "#06101a",
   "icons": [
     {
       "src": "icon-192.png",

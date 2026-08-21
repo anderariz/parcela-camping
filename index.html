@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Parcela Camping">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Parcela Camping V14.3</title>
+<title>Parcela Camping V15</title>
 <style>
 :root{
   --bg:#071018;--panel:#0d1822;--panel2:#132230;--line:#263a4b;
@@ -107,6 +107,29 @@ input,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--l
 </head>
 <body>
 <div id="app">
+  <header class="v15Header">
+    <div class="brand">
+      <img src="app-logo.png" alt="">
+      <div><strong>Parcela Camping</strong><span>V15</span></div>
+    </div>
+    <div class="headerTools">
+      <button id="northHeaderBtn">🧭 Norte <span id="northLabel">0°</span></button>
+      <button id="sunHeaderBtn">☀️ Sol</button>
+      <button id="parcelHeaderBtn">📐 Parcela</button>
+    </div>
+  </header>
+  <aside class="v15Props" id="v15Props">
+    <div class="propsTitle">Parcela</div>
+    <div class="propsGrid">
+      <label>Ancho<input id="v15PlotW" type="number" step=".1"></label>
+      <label>Largo<input id="v15PlotH" type="number" step=".1"></label>
+    </div>
+    <label>Terreno<select id="v15Ground"><option value="grass">Hierba</option><option value="gravel">Grava</option></select></label>
+    <label>Pasillo<select id="v15Road"><option value="top">Arriba</option><option value="right">Derecha</option><option value="bottom">Abajo</option><option value="left">Izquierda</option></select></label>
+    <label>Norte<select id="v15North"><option value="0">0°</option><option value="45">45°</option><option value="90">90°</option><option value="135">135°</option><option value="180">180°</option><option value="225">225°</option><option value="270">270°</option><option value="315">315°</option></select></label>
+    <button id="v15Apply" class="primary">Aplicar</button>
+    <div class="propsHint">La V15 mantiene el motor de V14.4 y reorganiza la interfaz.</div>
+  </aside>
   <div id="stageWrap"><svg id="stage" viewBox="0 0 1200 900"></svg></div>
 
   <div class="history">
@@ -135,7 +158,7 @@ input,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--l
     <button id="deleteBtn" class="danger">🗑</button>
   </div>
 
-  <div class="watermark">Parcela Camping · V14.3</div>
+  <div class="watermark">Parcela Camping · V15</div>
 
   <div id="backdrop" class="backdrop"></div>
 
@@ -177,10 +200,11 @@ input,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--l
       <button class="cat" data-cat="tent">Tiendas</button>
       <button class="cat" data-cat="furniture">Mobiliario</button>
       <button class="cat" data-cat="kitchen">Cocina</button>
+      <button class="cat" data-cat="parcel">Parcela</button>
       <button class="cat" data-cat="other">Otros</button>
     </div>
     <div class="searchBox"><span>⌕</span><input id="searchInput" type="search" placeholder="Buscar elemento…"></div>
-    <div id="library" class="library"></div>
+    <div id="library" class="library"></div><div class="note" style="margin-top:10px">En <b>Parcela</b> puedes añadir árbol, seto, punto de luz y punto de agua, especialmente útil para parcelas personalizadas.</div>
   </section>
 
   <section id="propsPanel" class="panel">
@@ -215,9 +239,11 @@ const TYPES={
   cooler:{name:'Nevera portátil',cat:'kitchen',w:.85,h:.5,img:'cooler.png'},
   stove:{name:'Cocina',cat:'kitchen',w:.65,h:.4,img:'stove.png'},
   bike:{name:'Bicicleta',cat:'other',w:1.8,h:.55,emoji:'🚲'},
-  tree:{name:'Árbol',cat:'other',w:1.2,h:1.2,emoji:'🌳',fixed:true},
-  hedge:{name:'Seto',cat:'other',w:2.5,h:.45,emoji:'🌿',fixed:true},
-  utility:{name:'Luz + agua',cat:'other',w:.35,h:.35,emoji:'⚡💧',fixed:true}
+  tree:{name:'Árbol',cat:'parcel',w:1.2,h:1.2,emoji:'🌳',fixed:true,placeable:true},
+  hedge:{name:'Seto',cat:'parcel',w:2.5,h:.45,emoji:'🌿',fixed:true,placeable:true},
+  light:{name:'Punto de luz',cat:'parcel',w:.30,h:.30,emoji:'💡',placeable:true},
+  water:{name:'Punto de agua',cat:'parcel',w:.30,h:.30,emoji:'🚰',placeable:true},
+  utility:{name:'Luz + agua',cat:'parcel',w:.35,h:.35,emoji:'⚡💧',fixed:true}
 };
 
 const PLOTS=Array.from({length:30},(_,i)=>({
@@ -226,10 +252,11 @@ const PLOTS=Array.from({length:30},(_,i)=>({
   h:+(9+((i*3)%5)*.45).toFixed(2),
   road:['top','right','bottom','left'][i%4],
   ground:(i%5===4?'gravel':'grass'),
-  seed:(i+1)*97
+  seed:(i+1)*97,
+  north:((i*45)%360)
 }));
 
-let plotW=9,plotH=10,ground='grass',roadSide='top',grid=true;
+let plotW=9,plotH=10,ground='grass',roadSide='top',grid=true,northDeg=0;
 let objs=[],sel=null,idc=1,view={x:0,y:0,scale:1};
 let drag=null,pointers=new Map(),gesture=null;
 let undoStack=[],redoStack=[];
@@ -238,7 +265,7 @@ let activeCat='all';
 function E(tag,a={}){const n=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(a))n.setAttribute(k,v);return n}
 function cur(){return objs.find(o=>o.id===sel)}
 function seeded(s){return()=>((s=(s*1664525+1013904223)>>>0)/4294967296)}
-function snapshot(){return JSON.stringify({plotW,plotH,ground,roadSide,grid,objs,idc})}
+function snapshot(){return JSON.stringify({plotW,plotH,ground,roadSide,grid,northDeg,objs,idc})}
 function restore(s){const d=JSON.parse(s);plotW=d.plotW;plotH=d.plotH;ground=d.ground;roadSide=d.roadSide;grid=d.grid;objs=d.objs||[];idc=d.idc||1;sel=null;fit()}
 function pushUndo(){undoStack.push(snapshot());if(undoStack.length>50)undoStack.shift();redoStack=[];syncHistory()}
 function syncHistory(){$('undoBtn').disabled=!undoStack.length;$('redoBtn').disabled=!redoStack.length}
@@ -288,16 +315,17 @@ function drawObj(o,g){
   gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:Math.min(w,h)*.08,fill:'rgba(0,0,0,.001)',class:'hit'}));
   const t=TYPES[o.type];
   if(t?.img){
-    const im=E('image',{x:0,y:0,width:w,height:h,href:t.img,preserveAspectRatio:'xMidYMid meet'});
+    const im=E('image',{x:0,y:0,width:w,height:h,href:t.img,preserveAspectRatio:'none'});
     im.setAttribute('pointer-events','none');gr.appendChild(im);
   }else if(o.type==='tree'){
     gr.appendChild(E('ellipse',{cx:w*.54,cy:h*.58,rx:w*.38,ry:h*.34,fill:'#000',opacity:.25}));
     [[.42,.40,.34],[.64,.44,.31],[.49,.64,.34],[.30,.59,.27]].forEach((a,i)=>gr.appendChild(E('circle',{cx:w*a[0],cy:h*a[1],r:Math.min(w,h)*a[2],fill:i%2?'#4b7b38':'#5e8d43'})));
   }else if(o.type==='hedge'){
     gr.appendChild(E('rect',{x:0,y:h*.18,width:w,height:h*.64,rx:h*.28,fill:'#376c36',stroke:'#244b2c','stroke-width':1.4}));
-  }else if(o.type==='utility'){
+  }else if(o.type==='utility'||o.type==='light'||o.type==='water'){
     gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:5,fill:'#293746'}));
-    const tx=E('text',{x:w/2,y:h*.67,'text-anchor':'middle','font-size':Math.max(12,h*.52)});tx.textContent='⚡💧';gr.appendChild(tx);
+    const tx=E('text',{x:w/2,y:h*.67,'text-anchor':'middle','font-size':Math.max(12,h*.52)});
+    tx.textContent=o.type==='light'?'💡':(o.type==='water'?'🚰':'⚡💧');gr.appendChild(tx);
   }else if(o.type==='floor'){
     gr.appendChild(E('rect',{x:0,y:0,width:w,height:h,rx:3,fill:'#252d2f',stroke:'#6a7779','stroke-width':1.2}));
   }else if(o.type==='bike'){
@@ -329,6 +357,11 @@ function render(){
   }
   let rr;if(roadSide==='top')rr={x:ox,y:oy-road,width:plotW*s,height:road};if(roadSide==='bottom')rr={x:ox,y:oy+plotH*s,width:plotW*s,height:road};if(roadSide==='left')rr={x:ox-road,y:oy,width:road,height:plotH*s};if(roadSide==='right')rr={x:ox+plotW*s,y:oy,width:road,height:plotH*s};
   svg.appendChild(E('rect',{...rr,fill:'#8f7b5b'}));
+  const ng=E('g',{transform:`translate(${ox+42} ${oy+42}) rotate(${northDeg})`});
+  ng.appendChild(E('circle',{cx:0,cy:0,r:24,fill:'#0b1722',stroke:'#0a84ff','stroke-width':2,opacity:.95}));
+  ng.appendChild(E('path',{d:'M 0 -18 L 7 8 L 0 4 L -7 8 Z',fill:'#e7f4ff'}));
+  const nt=E('text',{x:0,y:36,'text-anchor':'middle','font-size':14,fill:'#e7f4ff'});nt.textContent='N';ng.appendChild(nt);
+  svg.appendChild(ng);
   [
     ...objs.filter(o=>o.type==='floor'),
     ...objs.filter(o=>o.type==='chair'),
@@ -350,14 +383,14 @@ function add(type){
 function loadPreset(id,keep=false){
   const p=PLOTS.find(x=>x.id===id)||PLOTS[0];
   const gear=keep?objs.filter(o=>!o.fixed).map(o=>({...o})):[];
-  plotW=p.w;plotH=p.h;ground=p.ground;roadSide=p.road;objs=infra(p);
+  plotW=p.w;plotH=p.h;ground=p.ground;roadSide=p.road;northDeg=p.north||0;objs=infra(p);
   for(const o of gear){o.x=Math.max(0,Math.min(o.x,Math.max(0,plotW-o.w)));o.y=Math.max(0,Math.min(o.y,Math.max(0,plotH-o.h)));objs.push(o)}
   sel=null;fit();
 }
 function loadCustom(keep=false){
   const gear=keep?objs.filter(o=>!o.fixed).map(o=>({...o})):[];
   plotW=Math.max(3,+$('customW').value||9);plotH=Math.max(3,+$('customH').value||10);
-  ground=$('customGround').value;roadSide=$('customRoad').value;objs=[];
+  ground=$('customGround').value;roadSide=$('customRoad').value;northDeg=+$('v15North').value||0;objs=[];
   for(const o of gear){o.x=Math.max(0,Math.min(o.x,Math.max(0,plotW-o.w)));o.y=Math.max(0,Math.min(o.y,Math.max(0,plotH-o.h)));objs.push(o)}
   sel=null;fit();
 }
@@ -396,7 +429,7 @@ $('loadPlotBtn').onclick=()=>{pushUndo();const keep=$('keepGear').checked;if(plo
 
 const library=$('library');
 function libraryHTML(){
-  return Object.entries(TYPES).filter(([k,t])=>!t.fixed).map(([k,t])=>{
+  return Object.entries(TYPES).filter(([k,t])=>!t.fixed||t.placeable).map(([k,t])=>{
     const visual=t.img?`<img src="${t.img}" alt="">`:`<div class="emoji">${t.emoji||'◻︎'}</div>`;
     return `<button data-add="${k}" data-cat="${t.cat}" data-name="${t.name.toLowerCase()}">${visual}<span class="name">${t.name}</span></button>`;
   }).join('');
@@ -440,7 +473,73 @@ svg.addEventListener('pointermove',e=>{
 function endPointer(e){pointers.delete(e.pointerId);drag=null;if(pointers.size<2)gesture=null}
 svg.addEventListener('pointerup',endPointer);svg.addEventListener('pointercancel',endPointer);
 
+
+function syncV15Props(){
+  if(!$('v15PlotW')) return;
+  $('v15PlotW').value=plotW;
+  $('v15PlotH').value=plotH;
+  $('v15Ground').value=ground;
+  $('v15Road').value=roadSide;
+  $('v15North').value=String(northDeg);
+  $('northLabel').textContent=northDeg+'°';
+}
+$('parcelHeaderBtn')?.addEventListener('click',()=>{$('v15Props').classList.toggle('open');syncV15Props()});
+$('northHeaderBtn')?.addEventListener('click',()=>{$('v15Props').classList.add('open');syncV15Props();$('v15North').focus()});
+$('sunHeaderBtn')?.addEventListener('click',()=>alert('Sol: en esta V15 se recupera primero la orientación norte. El arco solar se reintroducirá sobre esta base sin tocar el motor.'));
+$('v15Apply')?.addEventListener('click',()=>{
+  pushUndo();
+  plotW=Math.max(3,+$('v15PlotW').value||plotW);
+  plotH=Math.max(3,+$('v15PlotH').value||plotH);
+  ground=$('v15Ground').value;
+  roadSide=$('v15Road').value;
+  northDeg=+$('v15North').value||0;
+  syncV15Props();
+  fit();
+});
+
 syncPlotUI();syncHistory();loadPreset('A01',false);
+syncV15Props();
 </script>
+
+<style id="v15-ui">
+:root{
+ --v15bg:#06101a;--v15panel:#0b1622;--v15panel2:#0f2030;--v15line:#17354d;--v15cyan:#00a9ff;
+}
+body{background:radial-gradient(circle at 50% 20%,#0a1a28,#06101a 58%)!important}
+.v15Header{
+ position:fixed;left:0;right:0;top:0;height:74px;display:flex;align-items:center;justify-content:space-between;
+ padding:8px 18px;border-bottom:1px solid rgba(0,169,255,.2);background:rgba(6,16,26,.94);
+ backdrop-filter:blur(16px);z-index:160
+}
+.brand{display:flex;align-items:center;gap:12px}.brand img{width:58px;height:58px;border-radius:15px;box-shadow:0 0 22px rgba(0,169,255,.25)}
+.brand div{display:grid}.brand strong{font-size:20px}.brand span{font-size:11px;color:#6f8aa0}
+.headerTools{display:flex;gap:8px}.headerTools button{padding:10px 14px;border-radius:14px;background:#0d1b29;border-color:#1a4562;color:#d9efff}
+#stageWrap{top:74px!important}
+.leftbar{top:calc(50% + 25px)!important;background:linear-gradient(180deg,rgba(9,24,36,.96),rgba(5,16,25,.96))!important;border-color:#18384f!important}
+.leftbar button:hover{background:#0e2a3e!important}
+.navpad{background:rgba(8,21,32,.95)!important;border-color:#17354d!important}
+.context{bottom:18px!important;background:rgba(7,20,31,.96)!important}
+.panel{background:linear-gradient(180deg,#0c1a27,#07111b)!important;border-color:#183b55!important}
+.v15Props{
+ position:fixed;z-index:145;right:18px;top:90px;width:250px;padding:14px;background:rgba(8,21,32,.96);
+ border:1px solid #173a55;border-radius:18px;box-shadow:0 22px 60px rgba(0,0,0,.38);
+ backdrop-filter:blur(16px);transform:translateX(calc(100% + 40px));transition:.22s ease
+}
+.v15Props.open{transform:translateX(0)}
+.propsTitle{font-size:16px;font-weight:700;margin-bottom:12px}
+.propsGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.v15Props label{margin-bottom:8px}.v15Props input,.v15Props select{background:#0c1a27!important;border-color:#1b405a!important}
+.propsHint{font-size:10px;color:#71889b;margin-top:10px;line-height:1.35}
+.library button{background:linear-gradient(180deg,#102335,#0b1825)!important;border-color:#21455f!important}
+.library button:hover{border-color:#00a9ff!important}
+.watermark{right:16px!important;bottom:10px!important}
+@media (orientation:portrait){
+ .v15Header{height:64px;padding:6px 8px}.brand img{width:48px;height:48px}.brand strong{font-size:16px}.headerTools button{padding:8px 9px;font-size:11px}
+ #stageWrap{top:64px!important}
+ .v15Props{left:8px;right:8px;top:auto;bottom:76px;width:auto;transform:translateY(calc(100% + 110px))}
+ .v15Props.open{transform:translateY(0)}
+}
+</style>
+
 </body>
 </html>
