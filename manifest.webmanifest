@@ -1,7 +1,7 @@
 {
-  "name": "Parcela Camping V15.1",
-  "short_name": "Camping V15.1",
-  "start_url": "./index.html?v=15.1",
+  "name": "Parcela Camping V15.2",
+  "short_name": "Camping V15.2",
+  "start_url": "./index.html?v=15.2",
   "display": "standalone",
   "background_color": "#06101a",
   "theme_color": "#06101a",

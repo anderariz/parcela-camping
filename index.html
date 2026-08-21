@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Parcela Camping">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Parcela Camping V15.1</title>
+<title>Parcela Camping V15.2</title>
 <style>
 :root{
   --bg:#071018;--panel:#0d1822;--panel2:#132230;--line:#263a4b;
@@ -110,7 +110,7 @@ input,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--l
   <header class="v15Header">
     <div class="brand">
       <img src="app-logo.png" alt="">
-      <div><strong>Parcela Camping</strong><span>V15.1</span></div>
+      <div><strong>Parcela Camping</strong><span>V15.2</span></div>
     </div>
     <div class="headerTools">
       <button id="northHeaderBtn">🧭 Norte <span id="northLabel">0°</span></button>
@@ -164,7 +164,7 @@ input,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--l
     <button id="deleteBtn" class="danger">🗑</button>
   </div>
 
-  <div class="watermark">Parcela Camping · V15.1</div>
+  <div class="watermark">Parcela Camping · V15.2</div>
 
   <div id="backdrop" class="backdrop"></div>
 
@@ -371,7 +371,7 @@ function render(){
   const sunG=E('g',{transform:`translate(${ox+plotW*s/2} ${oy+plotH*s/2}) rotate(${northDeg})`});
   const arcR=Math.min(plotW*s,plotH*s)*0.38;
   sunG.appendChild(E('path',{d:`M ${-arcR} ${arcR*.62} C ${-arcR*.30} ${-arcR*.70}, ${arcR*.30} ${-arcR*.70}, ${arcR} ${arcR*.62}`,fill:'none',stroke:'#f3b41b','stroke-width':3,'stroke-dasharray':'8 6',opacity:.62}));
-  const u=Math.max(0,Math.min(1,(sunTime-7)/14)),sx=-arcR+2*arcR*u,sy=arcR*.62-1.32*arcR*Math.sin(Math.PI*u);
+  const u=Math.max(0,Math.min(1,(sunTime-7)/14)),sx=arcR-2*arcR*u,sy=arcR*.62-1.32*arcR*Math.sin(Math.PI*u);
   sunG.appendChild(E('circle',{cx:sx,cy:sy,r:14,fill:'#ffc43d',stroke:'#fff2a8','stroke-width':2}));
   svg.appendChild(sunG);
   [
@@ -545,10 +545,10 @@ body{background:radial-gradient(circle at 50% 20%,#0a1a28,#06101a 58%)!important
 <style id="v151fix">
 .v15Header{display:none!important}#stageWrap{top:0!important}
 .history{display:flex!important;position:fixed!important;left:max(10px,env(safe-area-inset-left))!important;top:max(10px,env(safe-area-inset-top))!important;z-index:230!important}
-.v151TopTools{position:fixed;left:calc(max(10px,env(safe-area-inset-left)) + 96px);top:max(10px,env(safe-area-inset-top));display:flex;gap:6px;z-index:230}
-.v151TopTools button{height:42px;padding:0 12px;border-radius:12px;background:rgba(8,21,32,.96);border:1px solid #173a55;color:#d9efff}
+.v151TopTools{position:fixed;left:calc(max(10px,env(safe-area-inset-left)) + 72px);top:max(10px,env(safe-area-inset-top));display:flex;gap:4px;z-index:230}
+.v151TopTools button{height:40px;padding:0 10px;border-radius:11px;background:rgba(8,21,32,.96);border:1px solid #173a55;color:#d9efff}
 .v15Props{top:62px!important}
-@media (orientation:portrait){.v151TopTools{left:10px!important;top:62px!important;flex-wrap:wrap}.v15Props{top:auto!important}}
+@media (orientation:portrait){.v151TopTools{left:8px!important;top:60px!important;flex-wrap:wrap}.v15Props{top:auto!important}}
 </style></body>
 </html>
 syncV15Props();
